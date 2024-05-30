@@ -21,6 +21,11 @@ protected:
 	HeightMap*	heightMap;
 	
 
-	Shader* basicShader;
+	Shader*		basicShader;
+	Shader*		skyboxShader;
+	Shader*		texturedShader;
+	
+	GLuint		cubeMap       = 0;
+	GLuint		groundTex     = 0;
 };
 
