@@ -4,10 +4,10 @@
 #include "../nclgl/GameTimer.h"
 const unsigned int TEXTURE_SIZE = 1000;
 
-class Renderer : public OGLRenderer	{
+class TestRenderer : public OGLRenderer	{
 public:
-	Renderer(Window &parent);
-	 ~Renderer(void);
+	TestRenderer(Window &parent);
+	 ~TestRenderer(void);
 	 void RenderScene()				override;
 	 void UpdateScene(float msec)	override;
 protected:

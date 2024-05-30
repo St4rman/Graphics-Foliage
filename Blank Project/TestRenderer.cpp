@@ -1,6 +1,6 @@
-#include "Renderer.h"
+#include "TestRenderer.h"
 
-Renderer::Renderer(Window &parent) : OGLRenderer(parent)	{
+TestRenderer::TestRenderer(Window &parent) : OGLRenderer(parent)	{
 	triangle = Mesh::GenerateTriangle();
 	testQuad = Mesh::GenerateQuad();
 
@@ -60,7 +60,7 @@ Renderer::Renderer(Window &parent) : OGLRenderer(parent)	{
 	timer = parent.GetTimer();
 	init = true;
 }
-Renderer::~Renderer(void)	{
+TestRenderer::~TestRenderer(void)	{
 	delete triangle;
 	delete testQuad;
 	delete basicShader;
@@ -69,11 +69,11 @@ Renderer::~Renderer(void)	{
 	glDeleteTextures(1, &ctexture);
 }
 
-void Renderer::UpdateScene(float dt) {
+void TestRenderer::UpdateScene(float dt) {
 
 }
 
-void Renderer::RenderScene()	{
+void TestRenderer::RenderScene()	{
 
 	glClearColor(0.2f,0.2f,0.2f,1.0f);	
 
