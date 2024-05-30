@@ -9,7 +9,9 @@ public:
 	~HeightMap(void) {};
 
 	Vector3 GetHeightmapSize() const { return heightmapSize; }
+	bool    loadSuccess()      const { return init; }
 protected:
 	Vector3 heightmapSize;
+	bool	init;
 };
 

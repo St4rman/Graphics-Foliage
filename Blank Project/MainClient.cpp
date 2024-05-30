@@ -1,22 +1,29 @@
 #include "../NCLGL/window.h"
+#include "Renderer.h"
 #include "TestRenderer.h"
 
 int main()	{
-	Window w("Make your own project!", 1280, 720, false);
+	Window w("Grass time!", 1280, 720, false);
 
 	if(!w.HasInitialised()) {
 		return -1;
 	}
-	
+
+	bool debug = false;
 	TestRenderer tRenderer(w);
+	Renderer Renderer(w);
+
 	if(!tRenderer.HasInitialised()) {
+		return -1;
+	}
+	if(!Renderer.HasInitialised()) {
 		return -1;
 	}
 
 	while(w.UpdateWindow()  && !Window::GetKeyboard()->KeyDown(KEYBOARD_ESCAPE)){
-		tRenderer.UpdateScene(w.GetTimer()->GetTimeDeltaSeconds());
-		tRenderer.RenderScene();
-		tRenderer.SwapBuffers();
+		Renderer.UpdateScene(w.GetTimer()->GetTimeDeltaSeconds());
+		Renderer.RenderScene();
+		Renderer.SwapBuffers();
 		if (Window::GetKeyboard()->KeyDown(KEYBOARD_F5)) {
 			Shader::ReloadAllShaders();
 		}

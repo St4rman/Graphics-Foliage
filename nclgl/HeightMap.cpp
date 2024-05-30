@@ -8,6 +8,7 @@ HeightMap::HeightMap(const std::string& name) {
 
 	if (!data) {
 		std::cout << "heightmap cant load! \n";
+		init = false;
 		return;
 	}
 
@@ -60,4 +61,5 @@ HeightMap::HeightMap(const std::string& name) {
 	heightmapSize.y = vertexScale.y * 255.0f;
 	heightmapSize.z = vertexScale.z * (iHeight - 1);
 
+	init = true;
 }
