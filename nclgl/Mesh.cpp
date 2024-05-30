@@ -51,6 +51,17 @@ void Mesh::Draw()	{
 	glBindVertexArray(0);	
 }
 
+void Mesh::DrawInstanced(int instanceCount) {
+	glBindVertexArray(arrayObject);
+	if (bufferObject[INDEX_BUFFER]) {
+		glDrawElementsInstanced(type, numIndices, GL_UNSIGNED_INT, 0, instanceCount);
+	}
+	else {
+		glDrawArraysInstanced(type, 0, numVertices, instanceCount);
+	}
+	glBindVertexArray(0);
+}
+
 void Mesh::DrawSubMesh(int i) {
 	if (i < 0 || i >= (int)meshLayers.size()) {
 		return;

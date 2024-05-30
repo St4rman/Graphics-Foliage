@@ -50,6 +50,7 @@ public:
 	~Mesh(void);
 
 	void Draw();
+	void DrawInstanced(int instanceCount);
 	void DrawSubMesh(int i);
 
 	static Mesh* LoadFromMeshFile(const std::string& name);
