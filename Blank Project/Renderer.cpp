@@ -56,6 +56,7 @@ bool Renderer::initTextures() {
 	earthTex = SOIL_load_OGL_texture(TEXTUREDIR"BarrenReds.JPG", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
 	earthBump = SOIL_load_OGL_texture(TEXTUREDIR"BarrenRedsDOT3.JPG", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
 	debugTex = SOIL_load_OGL_texture(TEXTUREDIR"test.jpg", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+	grassTex = SOIL_load_OGL_texture(TEXTUREDIR"grassbush.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
 
 	cubeMap = SOIL_load_OGL_cubemap(
 		TEXTUREDIR"left.png", TEXTUREDIR"right.png",
@@ -63,7 +64,7 @@ bool Renderer::initTextures() {
 		TEXTUREDIR"front.png", TEXTUREDIR"back.png",
 		SOIL_LOAD_RGB, SOIL_CREATE_NEW_ID, 0);
 
-	if (!earthTex || !earthBump || !cubeMap || !waterTex || !debugTex) {
+	if (!earthTex || !earthBump || !cubeMap || !grassTex || !debugTex) {
 		return false;
 	}
 
@@ -93,7 +94,7 @@ bool Renderer::initShaders() {
 
 bool Renderer::initMeshes(){
 
-	quad = Mesh::GenerateQuad();
+	quad = Mesh::GenerateTriangle();
 	heightMap = new HeightMap(TEXTUREDIR"white.JPG");
 	return heightMap->loadSuccess();
 
@@ -243,9 +244,8 @@ void Renderer::DrawGrass() {
 	BindShader(gpuShader);
 
 	Vector3 hSize = heightMap->GetHeightmapSize();
-	modelMatrix = Matrix4::Translation({hSize.x *0.5f, hSize.y* 2.0f, hSize.z * 0.5f}) * Matrix4::Scale({ 100.0f, 100.0f, 100.0f });
+	modelMatrix = Matrix4::Translation({ hSize.x * 0.5f, hSize.y * 2.0f, hSize.z * 0.5f }) * Matrix4::Scale({ 100.0f, 100.0f, 100.0f });
 	textureMatrix.ToIdentity();
-	
 	
 	std::vector<Vector3> translations;
 	translations.resize(16);
@@ -263,10 +263,9 @@ void Renderer::DrawGrass() {
 	glUniform3fv(glGetUniformLocation(gpuShader->GetProgram(), "offset"), translations.size(), (float*)&translations[0]);
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, debugTex);
+	glBindTexture(GL_TEXTURE_2D, grassTex);
 	glUniform1i(glGetUniformLocation(sceneShader->GetProgram(), "diffuseTex"), 0);
 
 	UpdateShaderMatrices();	
 	quad->DrawInstanced(16);
-
 }

@@ -6,6 +6,8 @@ uniform mat4 projMatrix;
 uniform vec4 nodeColor;
 
 uniform vec3 offset[16];
+
+
 in vec3 position;
 in vec2 texCoord;
 

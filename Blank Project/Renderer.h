@@ -70,5 +70,6 @@ protected:
 	GLuint earthTex = 0;
 	GLuint debugTex = 0;
 	GLuint earthBump = 0;
+	GLuint grassTex = 0;
 };
 
