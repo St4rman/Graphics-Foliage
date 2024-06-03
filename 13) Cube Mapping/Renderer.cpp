@@ -106,6 +106,7 @@ void Renderer::DrawHeightMap() {
 }
 
 void Renderer::DrawWater() {
+
 	BindShader(reflectShader);
 	glUniform3fv(glGetUniformLocation(reflectShader->GetProgram(), "cameraPos"), 1, (float*)&camera->GetPosition());
 	glUniform1i(glGetUniformLocation(reflectShader->GetProgram(), "diffuseTex"), 0);

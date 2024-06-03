@@ -6,7 +6,7 @@ void Camera::UpdateCamera(float dt) {
 
 	pitch -= (Window::GetMouse()->GetRelativePosition().y);
 	yaw -= (Window::GetMouse()->GetRelativePosition().x);
-	speed = 400.0f * dt;
+	speed = 1000.0f * dt;
 
 	//mathf.clamp basicallys
 	pitch = std::min(pitch, 90.0f);

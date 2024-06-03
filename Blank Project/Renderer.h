@@ -1,31 +1,74 @@
 #pragma once
-#include <iostream>
+#include "Renderer.h"
 #include "../nclgl/OGLRenderer.h"
 #include "../nclgl/HeightMap.h"
+#include "../nclgl/Shader.h"
+#include "../nclgl/Camera.h"
+#include "../nclgl/SceneNode.h"
+#include "../nclgl/Frustum.h"
+#include "../nclgl/CubeRobot.h"
+#include <algorithm>
 
-class Renderer : public OGLRenderer{
-public: 
+class Camera;
+class SceneNode;
+class Shader;
+class HeightMap;
+
+
+class Renderer : public OGLRenderer {
+public:
 	Renderer(Window& parent);
-	virtual ~Renderer(void);
+	~Renderer(void);
 
-	bool InitShaders();
-	bool InitTextures();
-	bool InitMeshes();
+	void RenderScene() override;
+	void UpdateScene(float dt) override;
 
-
-	virtual void RenderScene();
-
-protected: 
-	Mesh*		triangle;
-	Mesh*		quad;
-	HeightMap*	heightMap;
 	
 
-	Shader*		basicShader;
-	Shader*		skyboxShader;
-	Shader*		texturedShader;
-	
-	GLuint		cubeMap       = 0;
-	GLuint		groundTex     = 0;
+protected:
+
+	bool initTextures();
+	bool initShaders();
+	bool initMeshes();
+	bool initSceneNodes();
+
+
+	void DrawHeightMap();
+	void DrawWater();
+	void DrawSkybox();
+	void DrawSceneNodeItems();
+	void DrawGrass();
+
+	void BuildNodeLists(SceneNode* from);
+	void SortNodeLists();
+	void DrawNodes();
+	void DrawNode(SceneNode* n);
+	void ClearNodeLists();
+
+	Shader* lightShader;
+	Shader* reflectShader;
+	Shader* skyboxShader;
+	Shader* sceneShader;
+	Shader* gpuShader;
+
+	Frustum frameFrustum;
+
+	vector<SceneNode*> transperentNodeList;
+	vector<SceneNode*> nodeList;
+
+	HeightMap* heightMap;
+	SceneNode* root;
+	Mesh* quad;
+
+	Light* light;
+	Camera* camera;
+
+	Vector3 localOrigin;
+
+	GLuint cubeMap = 0;
+	GLuint waterTex = 0;
+	GLuint earthTex = 0;
+	GLuint debugTex = 0;
+	GLuint earthBump = 0;
 };
 
