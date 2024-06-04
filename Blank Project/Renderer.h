@@ -7,6 +7,7 @@
 #include "../nclgl/SceneNode.h"
 #include "../nclgl/Frustum.h"
 #include "../nclgl/CubeRobot.h"
+#include "../nclgl/ComputeShader.h"
 #include <algorithm>
 
 class Camera;
@@ -31,6 +32,7 @@ protected:
 	bool initShaders();
 	bool initMeshes();
 	bool initSceneNodes();
+	bool initComputeShaders();
 
 
 	void DrawHeightMap();
@@ -50,6 +52,9 @@ protected:
 	Shader* skyboxShader;
 	Shader* sceneShader;
 	Shader* gpuShader;
+
+	ComputeShader* compShader;
+
 
 	Frustum frameFrustum;
 
@@ -71,5 +76,7 @@ protected:
 	GLuint debugTex = 0;
 	GLuint earthBump = 0;
 	GLuint grassTex = 0;
+
+	GLuint ssboID	=0;
 };
 

@@ -10,12 +10,12 @@ int main()	{
 	}
 
 	bool debug = false;
-	TestRenderer tRenderer(w);
+	//TestRenderer tRenderer(w);
 	Renderer Renderer(w);
 
-	if(!tRenderer.HasInitialised()) {
+	/*if(!tRenderer.HasInitialised()) {
 		return -1;
-	}
+	}*/
 	if(!Renderer.HasInitialised()) {
 		return -1;
 	}

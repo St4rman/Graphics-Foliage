@@ -6,6 +6,7 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
 	if (!initTextures()) return;
 	if (!initMeshes())   return;
 	if (!initSceneNodes()) return;
+	if (!initComputeShaders()) return;
 	
 	Vector3 heightmapSize = heightMap->GetHeightmapSize();
 
@@ -82,19 +83,30 @@ bool Renderer::initShaders() {
 	lightShader   = new Shader("PerPixelVertex.glsl", "PerPixelFragment.glsl");
 	sceneShader   = new Shader("sceneVertex.glsl", "sceneFragment.glsl");
 	gpuShader     = new Shader("gpuSceneVertex.glsl", "gpuSceneFragment.glsl");
-
-
+	
 	if (!reflectShader->LoadSuccess() || !skyboxShader->LoadSuccess() ||
 		!lightShader->LoadSuccess()   || !sceneShader->LoadSuccess()  ||
-		!gpuShader->LoadSuccess()) {
+		!gpuShader->LoadSuccess() ) {
 		return false;
 	}
 	return true;
 }
 
+bool Renderer::initComputeShaders() {
+
+	compShader = new ComputeShader("positionCompute.glsl");
+
+	if (!compShader->LoadSuccess()) return false;
+
+	glCreateBuffers(1, &ssboID);
+	glNamedBufferStorage(ssboID, 16* 3 * sizeof(GLfloat), 0, GL_DYNAMIC_STORAGE_BIT);
+
+	return true;
+}
+
 bool Renderer::initMeshes(){
 
-	quad = Mesh::GenerateTriangle();
+	quad = Mesh::GenerateQuad();
 	heightMap = new HeightMap(TEXTUREDIR"white.JPG");
 	return heightMap->loadSuccess();
 
@@ -240,14 +252,23 @@ void Renderer::DrawHeightMap() {
 }
 
 void Renderer::DrawGrass() {
+
+
+	//compute shadder bullshit
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, ssboID);
+	
+
+	compShader->Bind();
+	compShader->Dispatch((unsigned int)4, (unsigned int)4, 1);
+	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 	
 	BindShader(gpuShader);
 
 	Vector3 hSize = heightMap->GetHeightmapSize();
-	modelMatrix = Matrix4::Translation({ hSize.x * 0.5f, hSize.y * 2.0f, hSize.z * 0.5f }) * Matrix4::Scale({ 100.0f, 100.0f, 100.0f });
+	modelMatrix = Matrix4::Translation({ hSize.x * 0.5f, hSize.y * 2.0f, hSize.z * 0.5f }) * Matrix4::Scale({ 100.0f, 100.0f, 100.0f }) * Matrix4::Rotation(180, { 0,0,1 });
 	textureMatrix.ToIdentity();
 	
-	std::vector<Vector3> translations;
+	/*std::vector<Vector3> translations;
 	translations.resize(16);
 	int idx = 0;
 
@@ -260,12 +281,13 @@ void Renderer::DrawGrass() {
 			translations[idx++] = translation;
 		}
 	}
-	glUniform3fv(glGetUniformLocation(gpuShader->GetProgram(), "offset"), translations.size(), (float*)&translations[0]);
+	glUniform3fv(glGetUniformLocation(gpuShader->GetProgram(), "offset"), translations.size(), (float*)&translations[0]);*/
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, grassTex);
-	glUniform1i(glGetUniformLocation(sceneShader->GetProgram(), "diffuseTex"), 0);
+	glUniform1i(glGetUniformLocation(gpuShader->GetProgram(), "diffuseTex"), 0);
 
 	UpdateShaderMatrices();	
 	quad->DrawInstanced(16);
+
 }
