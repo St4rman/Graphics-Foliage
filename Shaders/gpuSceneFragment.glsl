@@ -3,9 +3,12 @@
 uniform sampler2D diffuseTex;
 uniform int		  useTexture;
 
+
 layout (binding  = 2, std430) readonly buffer ssbo1 { 
-	vec3 positions[16];
+	vec3 positions[400];
+	vec4 color;
 };
+
 
 in Vertex{
 	vec2 texCoord;
@@ -14,8 +17,6 @@ in Vertex{
 
 out vec4 fragColour;
 void main(void) {
-	fragColour = vec4(positions[0], 1.0);
-	// fragColour = texture(diffuseTex, IN.texCoord);
-	// fragColour = vec4(1.0,0.0,0.0,1.0);
-	
+	fragColour = color;
+	// fragColour = texture2D(diffuseTex, IN.texCoord);
 }

@@ -64,6 +64,7 @@ protected:
 	HeightMap* heightMap;
 	SceneNode* root;
 	Mesh* quad;
+	Mesh* triangle;
 
 	Light* light;
 	Camera* camera;
@@ -78,5 +79,6 @@ protected:
 	GLuint grassTex = 0;
 
 	GLuint ssboID	=0;
+	GLuint ssboGB = 0;
 };
 
