@@ -268,14 +268,17 @@ void Renderer::DrawGrass() {
 	
 	BindShader(gpuShader);
 
-	modelMatrix = Matrix4::Translation({ 0.0f, hSize.y * 1.1f, 0.0f }) * Matrix4::Scale({ 10.0f, 10.0f, 10.0f } );
+	modelMatrix = Matrix4::Translation({ 0.0f, 225.0f + 80.0f, 0.0f }) * Matrix4::Scale({ 80.0f, 80.0f, 80.0f }) * Matrix4::Rotation(180, {0,0,1});
 	textureMatrix.ToIdentity();
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, grassTex);
 	glUniform1i(glGetUniformLocation(gpuShader->GetProgram(), "diffuseTex"), 0);
 
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	UpdateShaderMatrices();	
-	auto grass = Mesh::GenerateTriangle();
-	grass->DrawInstanced(400);
+	Mesh* qaub = Mesh::LoadFromMeshFile("grass.msh");
+	qaub->DrawInstanced(400);
 }

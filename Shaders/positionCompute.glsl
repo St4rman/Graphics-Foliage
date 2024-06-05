@@ -15,18 +15,16 @@ int getArrayFromUV(vec2 uv){
 	return int(uv.x) + 20 * int(uv.y);
 }
 
-
 void calcChunk(vec2 uv){
 	color = vec4(0,1,0,1);
 }
 
-
 void populatePosition(vec2 uvID){
 
-	vec3 temp;
+	vec2 temp;
 	temp.x = uvID.x * mapSize.x/20.0f;
-	temp.z = uvID.y * mapSize.z/20.0f;
-	positions[getArrayFromUV(uvID)] = temp;	
+	temp.y = uvID.y * mapSize.z/20.0f;
+	positions[getArrayFromUV(uvID)] = vec3(temp.x, 0, temp.y);	
 
 }
 
