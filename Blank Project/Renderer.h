@@ -68,6 +68,7 @@ protected:
 
 	Light* light;
 	Camera* camera;
+	GameTimer* timer;
 
 	Vector3 localOrigin;
 

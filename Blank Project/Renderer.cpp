@@ -22,6 +22,7 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
+	timer = parent.GetTimer();
 	init = true;
 }
 
@@ -263,6 +264,8 @@ void Renderer::DrawGrass() {
 	compShader->Dispatch((unsigned int)20, (unsigned int)20, 1);
 	glUniform3fv(glGetUniformLocation(compShader->GetProgram(), "cameraPos"), 1, (float*)&camera->GetPosition());
 	glUniform3fv(glGetUniformLocation(compShader->GetProgram(), "mapSize"), 1, (float*)&hSize);
+	glUniform1f(glGetUniformLocation(compShader->GetProgram(), "t"), (float)timer->GetTotalTimeSeconds());
+	glUniform1i(glGetUniformLocation(compShader->GetProgram(), "scale"), (int)20);
 
 	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 	
