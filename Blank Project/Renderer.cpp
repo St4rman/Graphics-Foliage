@@ -11,7 +11,7 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
 	Vector3 heightmapSize = heightMap->GetHeightmapSize();
 
 	camera = new Camera(-45.0f, 0.0f, heightmapSize * Vector3(0.5f, 5.0f, 0.5f));
-	light = new Light(heightmapSize * Vector3(0.5f, 5.0, 0.5f), Vector4(1, 1, 1, 1), heightmapSize.x);
+	light = new Light(heightmapSize * Vector3(0.5f, 10.0, 0.5f), Vector4(1, 1, 1, 1), 10000);
 
 	localOrigin = heightmapSize * Vector3(0.5f, 5.0f, 0.5f);
 
@@ -55,8 +55,8 @@ void Renderer::ClearNodeLists() {
 bool Renderer::initTextures() {
 
 	waterTex = SOIL_load_OGL_texture(TEXTUREDIR"water.TGA", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
-	earthTex = SOIL_load_OGL_texture(TEXTUREDIR"BarrenReds.JPG", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
-	earthBump = SOIL_load_OGL_texture(TEXTUREDIR"BarrenRedsDOT3.JPG", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+	earthTex = SOIL_load_OGL_texture(TEXTUREDIR"base_grass.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+	earthBump = SOIL_load_OGL_texture(TEXTUREDIR"base_grassN.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
 	debugTex = SOIL_load_OGL_texture(TEXTUREDIR"test.jpg", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
 	grassTex = SOIL_load_OGL_texture(TEXTUREDIR"grassbush.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
 
@@ -233,6 +233,7 @@ void Renderer::DrawSkybox() {
 void Renderer::DrawHeightMap() {
 
 	BindShader(lightShader);
+
 	SetShaderLight(*light);
 
 	glUniform3fv(glGetUniformLocation(lightShader->GetProgram(), "cameraPos"), 1, (float*)&camera->GetPosition());
@@ -272,12 +273,13 @@ void Renderer::DrawGrass() {
 	
 	BindShader(gpuShader);
 
-	modelMatrix = Matrix4::Translation({ 0.0f, 225.0f + 80.0f, 0.0f }) * Matrix4::Scale({ 50.0f, 50.0f, 50.0f }) * Matrix4::Rotation(180, {0,0,1});
+	modelMatrix = Matrix4::Translation({ 0.0f, 225.0f + 40.0f, 0.0f }) * Matrix4::Scale({ 10.0f, 10.0f, 10.0f } );
 	textureMatrix.ToIdentity();
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, grassTex);
 	glUniform1i(glGetUniformLocation(gpuShader->GetProgram(), "diffuseTex"), 0);
+	glUniform1i(glGetUniformLocation(gpuShader->GetProgram(), "useTexture"), 0);
 	glUniform1f(glGetUniformLocation(gpuShader->GetProgram(), "t"), timer->GetTotalTimeSeconds());
 
 	glEnable(GL_BLEND);
@@ -285,6 +287,6 @@ void Renderer::DrawGrass() {
 
 
 	UpdateShaderMatrices();	
-	Mesh* qaub = Mesh::LoadFromMeshFile("grassequi.msh");
+	Mesh* qaub = Mesh::LoadFromMeshFile("grassVert.msh");
 	qaub->DrawInstanced(scale*scale);
 }

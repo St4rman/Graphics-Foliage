@@ -16,7 +16,6 @@ int getArrayFromUV(vec2 uv){
 	return int(uv.x) + scale * int(uv.y);
 }
 
-
 void calcChunk(vec2 uv){
 	color = vec4(0,1,0,1);
 }
@@ -28,7 +27,7 @@ void populatePosition(vec2 uvID){
 	temp.y = uvID.y * mapSize.z/float(scale);
 	
 	positions[getArrayFromUV(uvID)] = vec3(temp.x, 0, temp.y);	
-
+	
 }
 
 void main(){

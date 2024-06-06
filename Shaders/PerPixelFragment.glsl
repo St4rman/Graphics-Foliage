@@ -34,5 +34,4 @@ void main(void)	{
 	fragColour.rgb += (lightColor.rgb * specFactor)*atten*0.33;
 	fragColour.rgb +=  surface * 0.1f;
 	fragColour.a  = diffuse.a;
-
 }
