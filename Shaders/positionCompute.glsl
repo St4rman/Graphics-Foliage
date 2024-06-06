@@ -8,13 +8,14 @@ uniform vec3 mapSize;
 uniform int scale;
 
 layout(binding = 2, std430) buffer ssbo1 {
-	vec3 positions[400];
+	vec3 positions[2500];
 	vec4 color;
 };
 
 int getArrayFromUV(vec2 uv){
 	return int(uv.x) + scale * int(uv.y);
 }
+
 
 void calcChunk(vec2 uv){
 	color = vec4(0,1,0,1);
@@ -25,10 +26,10 @@ void populatePosition(vec2 uvID){
 	vec2 temp;
 	temp.x = uvID.x * mapSize.x/float(scale);
 	temp.y = uvID.y * mapSize.z/float(scale);
+	
 	positions[getArrayFromUV(uvID)] = vec3(temp.x, 0, temp.y);	
 
 }
-
 
 void main(){
 	

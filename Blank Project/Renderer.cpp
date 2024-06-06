@@ -100,7 +100,7 @@ bool Renderer::initComputeShaders() {
 	if (!compShader->LoadSuccess()) return false;
 
 	glCreateBuffers(1, &ssboID);
-	glNamedBufferStorage(ssboID, 3 * 400* sizeof(GLfloat) * 4 * sizeof(GLfloat), 0, GL_DYNAMIC_STORAGE_BIT);
+	glNamedBufferStorage(ssboID, 3 * 2500* sizeof(GLfloat) * 4 * sizeof(GLfloat), 0, GL_DYNAMIC_STORAGE_BIT);
 
 	return true;
 }
@@ -256,32 +256,35 @@ void Renderer::DrawHeightMap() {
 
 void Renderer::DrawGrass() {
 
+	int scale = 50;
 	//compute shader bullshit
 	Vector3 hSize = heightMap->GetHeightmapSize();
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, ssboID);
 	
 	compShader->Bind();
-	compShader->Dispatch((unsigned int)20, (unsigned int)20, 1);
+	compShader->Dispatch((unsigned int)scale, (unsigned int)scale, 1);
 	glUniform3fv(glGetUniformLocation(compShader->GetProgram(), "cameraPos"), 1, (float*)&camera->GetPosition());
 	glUniform3fv(glGetUniformLocation(compShader->GetProgram(), "mapSize"), 1, (float*)&hSize);
 	glUniform1f(glGetUniformLocation(compShader->GetProgram(), "t"), (float)timer->GetTotalTimeSeconds());
-	glUniform1i(glGetUniformLocation(compShader->GetProgram(), "scale"), (int)20);
+	glUniform1i(glGetUniformLocation(compShader->GetProgram(), "scale"), (int)scale);
 
 	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 	
 	BindShader(gpuShader);
 
-	modelMatrix = Matrix4::Translation({ 0.0f, 225.0f + 80.0f, 0.0f }) * Matrix4::Scale({ 80.0f, 80.0f, 80.0f }) * Matrix4::Rotation(180, {0,0,1});
+	modelMatrix = Matrix4::Translation({ 0.0f, 225.0f + 80.0f, 0.0f }) * Matrix4::Scale({ 50.0f, 50.0f, 50.0f }) * Matrix4::Rotation(180, {0,0,1});
 	textureMatrix.ToIdentity();
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, grassTex);
 	glUniform1i(glGetUniformLocation(gpuShader->GetProgram(), "diffuseTex"), 0);
+	glUniform1f(glGetUniformLocation(gpuShader->GetProgram(), "t"), timer->GetTotalTimeSeconds());
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+
 	UpdateShaderMatrices();	
-	Mesh* qaub = Mesh::LoadFromMeshFile("grass.msh");
-	qaub->DrawInstanced(400);
+	Mesh* qaub = Mesh::LoadFromMeshFile("grassequi.msh");
+	qaub->DrawInstanced(scale*scale);
 }

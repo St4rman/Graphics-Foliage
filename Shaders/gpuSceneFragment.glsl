@@ -5,7 +5,7 @@ uniform int		  useTexture;
 
 
 layout (binding  = 2, std430) readonly buffer ssbo1 { 
-	vec3 positions[400];
+	vec3 positions[2500];
 	vec4 color;
 };
 

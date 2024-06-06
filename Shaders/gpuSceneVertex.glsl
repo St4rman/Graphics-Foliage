@@ -4,10 +4,11 @@ uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 projMatrix;
 uniform vec4 nodeColor;
+uniform float t;
 layout(location = 1) uniform vec3 cameraPos;
 
 layout(binding = 2, std430) readonly buffer ssbo1 {
-	vec3 positions[400];
+	vec3 positions[2500];
 	vec4 color;
 };
 
@@ -28,7 +29,13 @@ void main(void)	{
 	temp[3][0] += positions[gl_InstanceID].x;
 	temp[3][2] += positions[gl_InstanceID].z;
 
-	gl_Position	  = (projMatrix * viewMatrix * temp) * vec4(position , 1.0);
+	vec3 pos = position;
+
+	if(pos.y <= 0.1f){
+		pos.xz += 0.3* sin(gl_InstanceID) * sin(t);
+	}
+
+	gl_Position	  = (projMatrix * viewMatrix * temp) * vec4(pos, 1.0);
 	OUT.texCoord  = texCoord;
 	OUT.colour 	  = nodeColor;
 }
