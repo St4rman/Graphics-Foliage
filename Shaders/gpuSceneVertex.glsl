@@ -31,7 +31,7 @@ void main(void)	{
 
 	vec3 pos = position;
 
-	if(pos.y <= 0.1f){
+	if(pos.y >= 0.1f){
 		pos.xz += 0.3* sin(gl_InstanceID) * sin(t);
 	}
 

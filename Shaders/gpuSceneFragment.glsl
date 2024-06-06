@@ -34,4 +34,5 @@ void main(void) {
 	else {
 		fragColour = texture2D(diffuseTex, IN.texCoord);
 	}
+	// fragColour = color;
 }
