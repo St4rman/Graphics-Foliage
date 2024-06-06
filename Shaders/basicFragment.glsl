@@ -12,7 +12,7 @@ layout (std140) uniform Matrices{
 };
 
 layout (binding  = 2, std430) readonly buffer ssbo1 { 
-	vec4 temp;
+	vec4 temp[2];
 };
 
 out vec4 fragColour;

@@ -41,12 +41,10 @@ Mesh::~Mesh(void)	{
 void Mesh::Draw()	{
 	glBindVertexArray(arrayObject);
 	if(bufferObject[INDEX_BUFFER]) {
-		//glDrawElements(type, numIndices, GL_UNSIGNED_INT, 0);
-		glDrawElementsInstanced(type, numIndices, GL_UNSIGNED_INT, 0, 1000);
+		glDrawElements(type, numIndices, GL_UNSIGNED_INT, 0);
 	}
 	else{
-		//glDrawArrays(type, 0, numVertices);
-		glDrawArraysInstanced(type, 0, numVertices, 1000);
+		glDrawArrays(type, 0, numVertices);
 	}
 	glBindVertexArray(0);	
 }

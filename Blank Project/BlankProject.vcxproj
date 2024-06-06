@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{8274D442-89CD-4AC2-AA8E-A9FA621452ED}</ProjectGuid>
     <RootNamespace>Tutorial1</RootNamespace>
-    <ProjectName>Blank Project</ProjectName>
+    <ProjectName>GrassRendering</ProjectName>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -136,10 +136,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BlankProject.cpp" />
+    <ClCompile Include="MainClient.cpp" />
+    <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="Resources.cpp" />
     <ClCompile Include="TestRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Renderer.h" />
+    <ClInclude Include="Resources.h" />
     <ClInclude Include="TestRenderer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

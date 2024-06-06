@@ -5,7 +5,6 @@ uniform mat4 viewMatrix;
 uniform mat4 projMatrix;
 uniform vec4 nodeColor;
 
-
 in vec3 position;
 in vec2 texCoord;
 

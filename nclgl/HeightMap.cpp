@@ -1,6 +1,6 @@
 #include "HeightMap.h"
 
-HeightMap::HeightMap(const std::string& name) {
+HeightMap::HeightMap(const std::string& name, Vector3 vScale) {
 
 	int iWidth, iHeight, iChans;
 	unsigned char* data = SOIL_load_image(name.c_str(),
@@ -8,6 +8,7 @@ HeightMap::HeightMap(const std::string& name) {
 
 	if (!data) {
 		std::cout << "heightmap cant load! \n";
+		init = false;
 		return;
 	}
 
@@ -17,8 +18,8 @@ HeightMap::HeightMap(const std::string& name) {
 	textureCoords	= new Vector2[numIndices];
 	indices			= new GLuint[numIndices];
 
-	Vector3 vertexScale  = Vector3(16.0f, 1.0f, 16.0f);
-	Vector2 textureScale = Vector2(1 / 16.0f, 1 / 16.0f);
+	Vector3 vertexScale  = vScale;
+	Vector2 textureScale = Vector2(1 / 20.0f, 1 / 20.0f);
 
 	for (int z = 0; z < iHeight; ++z) {
 		for (int x = 0; x < iWidth; ++x) {
@@ -60,4 +61,5 @@ HeightMap::HeightMap(const std::string& name) {
 	heightmapSize.y = vertexScale.y * 255.0f;
 	heightmapSize.z = vertexScale.z * (iHeight - 1);
 
+	init = true;
 }
