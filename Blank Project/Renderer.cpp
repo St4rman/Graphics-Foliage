@@ -1,7 +1,8 @@
 #include "Renderer.h"
 
 Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
-	SCALE = { 15, 15 };
+	SCALE = { 20, 20 };
+	TOTALDISPATCH = SCALE.x * SCALE.y * 10 * 10;
 
 	if (!initShaders())  return;
 	if (!initTextures()) return;
@@ -103,7 +104,7 @@ bool Renderer::initComputeShaders() {
 	if (!compShader->LoadSuccess()) return false;
 
 	glCreateBuffers(1, &ssboID);
-	glNamedBufferStorage(ssboID, 3 * 5625 * sizeof(GLfloat) * 4 * sizeof(GLfloat), 0, GL_DYNAMIC_STORAGE_BIT);
+	glNamedBufferStorage(ssboID, 3 * TOTALDISPATCH * sizeof(GLfloat) * 4 * sizeof(GLfloat), 0, GL_DYNAMIC_STORAGE_BIT);
 
 	return true;
 }
@@ -256,13 +257,11 @@ void Renderer::DrawHeightMap() {
 
 	UpdateShaderMatrices();
 
-	heightMap->Draw();
+	heightMap->DrawInstanced(1);
 
 }
 
 void Renderer::DrawGrass() {
-
-	
 
 	Vector3 hSize = heightMap->GetHeightmapSize();
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, ssboID);
@@ -279,7 +278,7 @@ void Renderer::DrawGrass() {
 	
 	BindShader(gpuShader);
 
-	modelMatrix = Matrix4::Translation({ 0.0f, 225.0f + 40.0f, 0.0f }) * Matrix4::Scale({ 10.0f, 10.0f, 10.0f } );
+	modelMatrix = Matrix4::Translation({ 0.0f, 225.0f + 40.0f, 0.0f }) * Matrix4::Scale({ 7.0f, 20.0f, 10.0f } );
 	textureMatrix.ToIdentity();
 
 	glActiveTexture(GL_TEXTURE0);
@@ -293,6 +292,6 @@ void Renderer::DrawGrass() {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	UpdateShaderMatrices();	
-	grassMesh->DrawInstanced(5625);
+	triangle->DrawInstanced(TOTALDISPATCH);
 	
 }

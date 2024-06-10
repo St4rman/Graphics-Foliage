@@ -1,6 +1,6 @@
 #version 430 core
 
-layout(local_size_x = 5, local_size_y =5, local_size_z = 1) in;
+layout(local_size_x = 10, local_size_y =10, local_size_z = 1) in;
 layout(rgba32f, binding = 0) uniform image2D imgOutput;
 layout(location = 0) uniform float t;
 
@@ -13,7 +13,7 @@ vec2 random2( vec2 p ) {
 }
 
 layout(binding = 2, std430) buffer ssbo1 {
-	vec3 positions[5625];
+	vec3 positions[40000];
 	vec4 color;
 };
 

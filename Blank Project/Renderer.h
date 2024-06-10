@@ -50,6 +50,7 @@ protected:
 
 
 	Vector2 SCALE = { 0,0 };
+	int		TOTALDISPATCH = 0;
 
 	Shader* lightShader;
 	Shader* reflectShader;
