@@ -39,9 +39,8 @@ void populatePosition(vec2 uv){
 
 
 void main(){
-
+	
  	ivec2 uv = ivec2(gl_GlobalInvocationID.xy);
 	populatePosition(uv);
 	calcChunk(gl_WorkGroupID);
-
 }
