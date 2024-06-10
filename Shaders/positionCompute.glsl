@@ -1,40 +1,47 @@
 #version 430 core
 
-layout(local_size_x = 1, local_size_y =1, local_size_z = 1) in;
+layout(local_size_x = 5, local_size_y =5, local_size_z = 1) in;
 layout(rgba32f, binding = 0) uniform image2D imgOutput;
 layout(location = 0) uniform float t;
 
 uniform vec3 cameraPos;
 uniform vec3 mapSize;
-uniform int scale;
+uniform vec2 scaley;
+
+vec2 random2( vec2 p ) {
+    return fract(sin(vec2(dot(p,vec2(127.1,311.7)),dot(p,vec2(269.5,183.3))))*43758.5453);
+}
 
 layout(binding = 2, std430) buffer ssbo1 {
-	vec3 positions[2500];
+	vec3 positions[5625];
 	vec4 color;
 };
 
+//CONDITIONAL BOTH SCALES SHOULD BE EQUAL FOR THIS TO WORK 
 int getArrayFromUV(vec2 uv){
-	return int(uv.x) + scale * int(uv.y);
+	return int( scaley.x *gl_WorkGroupSize.x* uv.x) +   int(uv.y);
 }
 
-void calcChunk(vec2 uv){
+void calcChunk(vec3 uv){
 	
 }
 
-void populatePosition(vec2 uvID){
+void populatePosition(vec2 uv){
 
-	vec2 temp;
-	temp.x = uvID.x * mapSize.x/float(scale);
-	temp.y = uvID.y * mapSize.z/float(scale);
-	
-	positions[getArrayFromUV(uvID)] = vec3(temp.x, 0, temp.y);	
+	vec3 tempWorldPos;
+	tempWorldPos.x =  uv.x *  mapSize.x/float(scaley.x * gl_WorkGroupSize.x );
+	tempWorldPos.z =  uv.y *  mapSize.z/float(scaley.y * gl_WorkGroupSize.y);
+
+	tempWorldPos.xz += random2(uv) *mapSize.xz/float(scaley.x * gl_WorkGroupSize.x );
+	positions[getArrayFromUV(uv)] = tempWorldPos;	
 	
 }
+
 
 void main(){
-	
+
  	ivec2 uv = ivec2(gl_GlobalInvocationID.xy);
 	populatePosition(uv);
-	calcChunk(uv);
+	calcChunk(gl_WorkGroupID);
 
 }

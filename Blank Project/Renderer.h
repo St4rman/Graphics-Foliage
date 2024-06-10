@@ -24,6 +24,7 @@ public:
 	void RenderScene() override;
 	void UpdateScene(float dt) override;
 
+
 	
 
 protected:
@@ -47,6 +48,9 @@ protected:
 	void DrawNode(SceneNode* n);
 	void ClearNodeLists();
 
+
+	Vector2 SCALE = { 0,0 };
+
 	Shader* lightShader;
 	Shader* reflectShader;
 	Shader* skyboxShader;
@@ -65,6 +69,7 @@ protected:
 	SceneNode* root;
 	Mesh* quad;
 	Mesh* triangle;
+	Mesh* grassMesh;
 
 	Light* light;
 	Camera* camera;

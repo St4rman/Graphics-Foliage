@@ -1,7 +1,8 @@
 #include "Renderer.h"
 
 Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
-	
+	SCALE = { 15, 15 };
+
 	if (!initShaders())  return;
 	if (!initTextures()) return;
 	if (!initMeshes())   return;
@@ -23,7 +24,9 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
 	timer = parent.GetTimer();
+	
 	init = true;
+	
 }
 
 Renderer::~Renderer(void) {
@@ -100,16 +103,18 @@ bool Renderer::initComputeShaders() {
 	if (!compShader->LoadSuccess()) return false;
 
 	glCreateBuffers(1, &ssboID);
-	glNamedBufferStorage(ssboID, 3 * 2500* sizeof(GLfloat) * 4 * sizeof(GLfloat), 0, GL_DYNAMIC_STORAGE_BIT);
+	glNamedBufferStorage(ssboID, 3 * 5625 * sizeof(GLfloat) * 4 * sizeof(GLfloat), 0, GL_DYNAMIC_STORAGE_BIT);
 
 	return true;
 }
 
 bool Renderer::initMeshes(){
 
-	quad = Mesh::GenerateQuad();
-	triangle = Mesh::GenerateTriangle();
-	heightMap = new HeightMap(TEXTUREDIR"white.jpg", { 5.0f, 1.0f, 5.0f });
+	quad		= Mesh::GenerateQuad();
+	triangle	= Mesh::GenerateTriangle();
+	heightMap	= new HeightMap(TEXTUREDIR"white.jpg", { 5.0f, 1.0f, 5.0f });
+	grassMesh	= Mesh::LoadFromMeshFile("GrassVert.msh");
+
 	std::cout << heightMap->GetHeightmapSize();
 	return heightMap->loadSuccess();
 
@@ -257,17 +262,18 @@ void Renderer::DrawHeightMap() {
 
 void Renderer::DrawGrass() {
 
-	int scale = 50;
-	//compute shader bullshit
+	
+
 	Vector3 hSize = heightMap->GetHeightmapSize();
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, ssboID);
 	
 	compShader->Bind();
-	compShader->Dispatch((unsigned int)scale, (unsigned int)scale, 1);
+	compShader->Dispatch((unsigned int)SCALE.x, (unsigned int)SCALE.y, 1);
 	glUniform3fv(glGetUniformLocation(compShader->GetProgram(), "cameraPos"), 1, (float*)&camera->GetPosition());
 	glUniform3fv(glGetUniformLocation(compShader->GetProgram(), "mapSize"), 1, (float*)&hSize);
 	glUniform1f(glGetUniformLocation(compShader->GetProgram(), "t"), (float)timer->GetTotalTimeSeconds());
-	glUniform1i(glGetUniformLocation(compShader->GetProgram(), "scale"), (int)scale);
+	glUniform2fv(glGetUniformLocation(compShader->GetProgram(), "scaley"), 1, (float*)&SCALE);
+
 
 	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 	
@@ -280,13 +286,13 @@ void Renderer::DrawGrass() {
 	glBindTexture(GL_TEXTURE_2D, grassTex);
 	glUniform1i(glGetUniformLocation(gpuShader->GetProgram(), "diffuseTex"), 0);
 	glUniform1i(glGetUniformLocation(gpuShader->GetProgram(), "useTexture"), 0);
+	glUniform3fv(glGetUniformLocation(gpuShader->GetProgram(), "lightPos"), 1, (float*)&light->GetPosition());
 	glUniform1f(glGetUniformLocation(gpuShader->GetProgram(), "t"), timer->GetTotalTimeSeconds());
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-
 	UpdateShaderMatrices();	
-	Mesh* qaub = Mesh::LoadFromMeshFile("grassVert.msh");
-	qaub->DrawInstanced(scale*scale);
+	grassMesh->DrawInstanced(5625);
+	
 }

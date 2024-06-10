@@ -4,11 +4,12 @@ uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 projMatrix;
 uniform vec4 nodeColor;
+
 uniform float t;
 layout(location = 1) uniform vec3 cameraPos;
 
 layout(binding = 2, std430) readonly buffer ssbo1 {
-	vec3 positions[2500];
+	vec3 positions[5625];
 	vec4 color;
 };
 

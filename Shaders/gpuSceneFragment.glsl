@@ -3,14 +3,20 @@
 uniform sampler2D diffuseTex;
 uniform int		  useTexture;
 
+uniform vec3 lightPos;
 
 layout (binding  = 2, std430) readonly buffer ssbo1 { 
-	vec3 positions[2500];
+	vec3 positions[5625];
 	vec4 color;
 };
 
 vec4 uLerp(vec4 a, vec4 b, float t){
 	return mix(a, b, t);
+}
+
+//returns a positive dot product
+float posDot (vec3 v1, vec3 v2){
+	return max(0.0f, dot(v1, v2));
 }
 
 in Vertex{
@@ -24,12 +30,13 @@ void main(void) {
 
 	vec2 uv = IN.texCoord;
 
-	vec4 tipGreen = vec4(0.0, 0.8706, 0.3216, 1.0);
-	vec4 bottomGreen =vec4(0.6392, 1.0, 0.3804, 1.0);
-	vec4 col = uLerp(tipGreen, bottomGreen, uv.y);
+	vec4 tipGreen 		= vec4(0.678,0.898,0.655,1);
+	vec4 bottomGreen 	= vec4(0.302,0.451,0.365,1);
+
+	vec4 bladeCol 	 = uLerp(tipGreen, bottomGreen, uv.y);
 
 	if(useTexture == 0){
-		fragColour = col;
+		fragColour = bladeCol;
 	}
 	else {
 		fragColour = texture2D(diffuseTex, IN.texCoord);
