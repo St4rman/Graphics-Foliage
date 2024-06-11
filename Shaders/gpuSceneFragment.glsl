@@ -2,6 +2,7 @@
 
 uniform sampler2D diffuseTex;
 uniform int		  useTexture;
+uniform float 	  t;
 
 uniform vec3 lightPos;
 
@@ -35,12 +36,11 @@ void main(void) {
 
 	vec4 bladeCol 	 = uLerp(tipGreen, bottomGreen, uv.y);
 
-	
-
 	if(useTexture == 0){
 		fragColour = bladeCol;
 	}
 	else {
-		fragColour = texture2D(diffuseTex, IN.texCoord);
+		vec2 st = uv;
+		fragColour = texture2D(diffuseTex, st);
 	}
 }

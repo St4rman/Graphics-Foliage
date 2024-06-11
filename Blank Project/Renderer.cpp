@@ -56,6 +56,7 @@ Renderer::~Renderer(void) {
 	glDeleteTextures(1, &debugTex);
 	glDeleteTextures(1, &earthBump);
 	glDeleteTextures(1, &grassTex);
+	glDeleteTextures(1, &compVnoise);
 }
 void Renderer::ClearNodeLists() {
 	transperentNodeList.clear();
@@ -111,6 +112,19 @@ bool Renderer::initComputeShaders() {
 
 	glCreateBuffers(1, &ssboID);
 	glNamedBufferStorage(ssboID, 3 * TOTALDISPATCH * sizeof(GLfloat) * 4 * sizeof(GLfloat), 0, GL_DYNAMIC_STORAGE_BIT);
+
+
+	glGenTextures(1, &compVnoise);
+	glActiveTexture(GL_TEXTURE0);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, compVnoise);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, 400, 400, 0, GL_RGBA, GL_FLOAT, NULL);
+	glBindImageTexture(0, compVnoise, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA32F);
+
 
 	return true;
 }
@@ -274,6 +288,11 @@ void Renderer::DrawGrass() {
 	
 	compShader->Bind();
 	compShader->Dispatch((unsigned int)SCALE.x, (unsigned int)SCALE.y, 1);
+
+
+	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+
+
 	glUniform3fv(glGetUniformLocation(compShader->GetProgram(), "cameraPos"), 1, (float*)&camera->GetPosition());
 	glUniform3fv(glGetUniformLocation(compShader->GetProgram(), "mapSize"), 1, (float*)&hSize);
 	glUniform1f(glGetUniformLocation(compShader->GetProgram(), "t"), (float)timer->GetTotalTimeSeconds());
@@ -288,16 +307,21 @@ void Renderer::DrawGrass() {
 	textureMatrix.ToIdentity();
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, grassTex);
+	glBindTexture(GL_TEXTURE_2D, compVnoise);
 	glUniform1i(glGetUniformLocation(gpuShader->GetProgram(), "diffuseTex"), 0);
-	glUniform1i(glGetUniformLocation(gpuShader->GetProgram(), "useTexture"), 0);
+	glUniform1i(glGetUniformLocation(gpuShader->GetProgram(), "useTexture"), 1);
 	glUniform3fv(glGetUniformLocation(gpuShader->GetProgram(), "lightPos"), 1, (float*)&light->GetPosition());
-	glUniform1f(glGetUniformLocation(gpuShader->GetProgram(), "t"), timer->GetTotalTimeSeconds());
+	glUniform1f(glGetUniformLocation(gpuShader->GetProgram(), "t"), (float)timer->GetTotalTimeSeconds());
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	UpdateShaderMatrices();	
 	triangle->DrawInstanced(TOTALDISPATCH);
+
+	modelMatrix = Matrix4::Translation({ hSize.x, 230.0f + 100.0f,hSize.z }) * Matrix4::Scale(hSize) * Matrix4::Rotation(90, { 1, 0, 0 });
+	textureMatrix.ToIdentity();
+	UpdateShaderMatrices();
+	quad->Draw();
 	
 }

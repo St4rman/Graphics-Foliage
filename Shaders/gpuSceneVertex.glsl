@@ -4,6 +4,7 @@ uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 projMatrix;
 uniform vec4 nodeColor;
+uniform sampler2D diffuseTex;
 
 uniform float t;
 layout(location = 1) uniform vec3 cameraPos;
