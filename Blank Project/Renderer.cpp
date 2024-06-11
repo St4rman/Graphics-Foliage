@@ -297,7 +297,7 @@ void Renderer::DrawGrass() {
 	glUniform3fv(glGetUniformLocation(compShader->GetProgram(), "mapSize"), 1, (float*)&hSize);
 	glUniform1f(glGetUniformLocation(compShader->GetProgram(), "t"), (float)timer->GetTotalTimeSeconds());
 	glUniform2fv(glGetUniformLocation(compShader->GetProgram(), "scaley"), 1, (float*)&SCALE);
-
+	glUniform1f(glGetUniformLocation(compShader->GetProgram(), "windSpeed"), (float)0.5f);
 
 	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 	
@@ -309,7 +309,7 @@ void Renderer::DrawGrass() {
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, compVnoise);
 	glUniform1i(glGetUniformLocation(gpuShader->GetProgram(), "diffuseTex"), 0);
-	glUniform1i(glGetUniformLocation(gpuShader->GetProgram(), "useTexture"), 1);
+	glUniform1i(glGetUniformLocation(gpuShader->GetProgram(), "useTexture"), 0);
 	glUniform3fv(glGetUniformLocation(gpuShader->GetProgram(), "lightPos"), 1, (float*)&light->GetPosition());
 	glUniform1f(glGetUniformLocation(gpuShader->GetProgram(), "t"), (float)timer->GetTotalTimeSeconds());
 
@@ -319,9 +319,9 @@ void Renderer::DrawGrass() {
 	UpdateShaderMatrices();	
 	triangle->DrawInstanced(TOTALDISPATCH);
 
-	modelMatrix = Matrix4::Translation({ hSize.x, 230.0f + 100.0f,hSize.z }) * Matrix4::Scale(hSize) * Matrix4::Rotation(90, { 1, 0, 0 });
+	/*modelMatrix = Matrix4::Translation({ hSize.x, 230.0f + 100.0f,hSize.z }) * Matrix4::Scale(hSize) * Matrix4::Rotation(90, { 1, 0, 0 });
 	textureMatrix.ToIdentity();
 	UpdateShaderMatrices();
-	quad->Draw();
+	quad->Draw();*/
 	
 }

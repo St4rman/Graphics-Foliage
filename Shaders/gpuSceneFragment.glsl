@@ -37,10 +37,10 @@ void main(void) {
 	vec4 bladeCol 	 = uLerp(tipGreen, bottomGreen, uv.y);
 
 	if(useTexture == 0){
-		fragColour = bladeCol;
+		// fragColour = bladeCol;
+		fragColour = bladeCol * diffuseTex.r;
 	}
 	else {
-		vec2 st = uv;
-		fragColour = texture2D(diffuseTex, st);
+		fragColour = bladeCol; 
 	}
 }

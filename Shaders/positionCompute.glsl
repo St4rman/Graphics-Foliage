@@ -7,6 +7,7 @@ layout(location = 0) uniform float t;
 uniform vec3 cameraPos;
 uniform vec3 mapSize;
 uniform vec2 scaley;
+uniform float windSpeed;
 
 vec2 random2( vec2 p ) {
     return fract(sin(vec2(dot(p,vec2(127.1,311.7)),dot(p,vec2(269.5,183.3))))*43758.5453);
@@ -14,7 +15,9 @@ vec2 random2( vec2 p ) {
 
 vec3 voroNoise(vec2 st, float angleOffset){
 
-    st *= 2;
+    st *= 20;
+	st += t * windSpeed;
+	
     vec3 color = vec3(.0);
 
     vec2 i_st = floor(st);
@@ -79,6 +82,6 @@ void main(){
 	vec3 col = 0.5 + 0.5*cos(0.+uv.xyx +vec3(0,2,4));
 	ivec2 st = ivec2(uv.xy);
 
-	vec3 vnoise = voroNoise(st/100.0, 0.5 * t);
+	vec3 vnoise = voroNoise(st/1000.0, 0.5 * t);
 	imageStore(imgOutput, st, vec4(vnoise, 1.0));
 }
