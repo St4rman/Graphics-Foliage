@@ -32,24 +32,30 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
 
 Renderer::~Renderer(void) {
 
-	delete camera;
 	delete heightMap;
 	delete root;
 	delete quad;
+	delete triangle;
+	delete grassMesh;
+	delete light;
+	delete camera;
+	delete timer;
 
 	//ALL SHADERS!!!
+	delete lightShader;
 	delete reflectShader;
 	delete skyboxShader;
-	delete lightShader;
 	delete sceneShader;
-
-	delete light;
+	delete gpuShader;
+	delete compShader;
 
 	//DELETE ALL TEXTURES!!!
+	glDeleteTextures(1, &cubeMap);
 	glDeleteTextures(1, &waterTex);
 	glDeleteTextures(1, &earthTex);
-	glDeleteTextures(1, &earthBump);
 	glDeleteTextures(1, &debugTex);
+	glDeleteTextures(1, &earthBump);
+	glDeleteTextures(1, &grassTex);
 }
 void Renderer::ClearNodeLists() {
 	transperentNodeList.clear();

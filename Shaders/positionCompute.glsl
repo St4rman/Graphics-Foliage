@@ -43,4 +43,7 @@ void main(){
  	ivec2 uv = ivec2(gl_GlobalInvocationID.xy);
 	populatePosition(uv);
 	calcChunk(gl_WorkGroupID);
+	
+	vec4 col = vec4(1,0,0,1);
+	imageStore(imgOutput, uv, col);
 }
