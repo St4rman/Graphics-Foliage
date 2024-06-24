@@ -27,7 +27,7 @@ vec2 rotate(vec2 v, float a) {
 }
 
 vec3 voroNoise(vec2 st, float angleOffset){
-	st += t * windSpeed * windDir;
+	st += t * windSpeed * normalize(windDir);
     st *= 6.0;
 	
     vec3 color = vec3(0.0, 0.0, 0.0);
@@ -54,8 +54,7 @@ vec3 voroNoise(vec2 st, float angleOffset){
     }
 
     color += m_dist;
-	color = vec3(smoothstep(0.00001,0.7, m_dist));
-    color *= vec3(0.0, 1.0, 0.7647);
+	color = vec3(smoothstep(0.001,0.9, m_dist));
     return color;
 }
 

@@ -90,6 +90,8 @@ protected:
 	GLuint ssboGB = 0;
 
 	float windSpeed;
+	float windFwdSway;
+	float windRightSway;
 	Vector2 windDir;
 };
 

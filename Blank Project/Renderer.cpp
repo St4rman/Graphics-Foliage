@@ -28,6 +28,8 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
 	
 	windSpeed = 0.05;
 	windDir   = { 1,1 };
+	windFwdSway = 80;
+	windRightSway = 45;
 
 	init = true;
 	
@@ -136,6 +138,7 @@ bool Renderer::initMeshes(){
 
 	quad		= Mesh::GenerateQuad();
 	triangle	= Mesh::GenerateTriangle();
+	triangle->GenerateNormals();
 	heightMap	= new HeightMap(TEXTUREDIR"white.jpg", { 5.0f, 1.0f, 5.0f });
 	grassMesh	= Mesh::LoadFromMeshFile("GrassVert.msh");
 
@@ -317,6 +320,9 @@ void Renderer::DrawGrass() {
 	glUniform3fv(glGetUniformLocation(gpuShader->GetProgram(), "lightPos"), 1, (float*)&light->GetPosition());
 	glUniform3fv(glGetUniformLocation(compShader->GetProgram(), "mapSize"), 1, (float*)&Vector3(290, 0, 200));
 	glUniform1f(glGetUniformLocation(gpuShader->GetProgram(), "t"), (float)timer->GetTotalTimeSeconds());
+	glUniform1f(glGetUniformLocation(gpuShader->GetProgram(), "windFwdSway"), (float)windFwdSway);
+	glUniform1f(glGetUniformLocation(gpuShader->GetProgram(), "windRightSway"), (float)windRightSway);
+	glUniform2fv(glGetUniformLocation(gpuShader->GetProgram(), "windDir"), 1, (float*)&windDir);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -324,11 +330,11 @@ void Renderer::DrawGrass() {
 	UpdateShaderMatrices();
 	triangle->DrawInstanced(TOTALDISPATCH);
 
-	modelMatrix = Matrix4::Translation({ 0, 230.0f + 100.0f,0  }) * Matrix4::Scale({100, 100, 100} ) * Matrix4::Rotation(90, {1,0,0});
-	//std::cout << hSize; 
-	textureMatrix.ToIdentity();
-	glUniform1i(glGetUniformLocation(gpuShader->GetProgram(), "useTexture"), 1);
-	UpdateShaderMatrices();
-	quad->Draw();
+	//modelMatrix = Matrix4::Translation({ 0, 230.0f + 100.0f,0  }) * Matrix4::Scale({100, 100, 100} ) * Matrix4::Rotation(90, {1,0,0});
+	////std::cout << hSize; 
+	//textureMatrix.ToIdentity();
+	//glUniform1i(glGetUniformLocation(gpuShader->GetProgram(), "useTexture"), 1);
+	//UpdateShaderMatrices();
+	//quad->Draw();
 	
 }
