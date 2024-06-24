@@ -9,13 +9,17 @@ uniform vec3 mapSize;
 uniform vec2 scaley;
 uniform float windSpeed;
 
+layout(binding = 2, std430) buffer ssbo1 {
+	vec3 positions[40000];
+	vec4 color;
+};
+
 vec2 random2( vec2 p ) {
     return fract(sin(vec2(dot(p,vec2(127.1,311.7)),dot(p,vec2(269.5,183.3))))*43758.5453);
 }
 
 vec3 voroNoise(vec2 st, float angleOffset){
-
-    st *= 20;
+    st *= 4.0;
 	st += t * windSpeed;
 	
     vec3 color = vec3(.0);
@@ -47,11 +51,6 @@ vec3 voroNoise(vec2 st, float angleOffset){
     return color;
 }
 
-layout(binding = 2, std430) buffer ssbo1 {
-	vec3 positions[40000];
-	vec4 color;
-};
-
 //CONDITIONAL BOTH SCALES SHOULD BE EQUAL FOR THIS TO WORK 
 int getArrayFromUV(vec2 uv){
 	return int( scaley.x *gl_WorkGroupSize.x* uv.x) +   int(uv.y);
@@ -64,24 +63,38 @@ void calcChunk(vec3 uv){
 void populatePosition(vec2 uv){
 
 	vec3 tempWorldPos;
-	tempWorldPos.x =  uv.x *  mapSize.x/float(scaley.x * gl_WorkGroupSize.x );
-	tempWorldPos.z =  uv.y *  mapSize.z/float(scaley.y * gl_WorkGroupSize.y);
+	tempWorldPos.x =  uv.x *  mapSize.x/float( scaley.x * gl_WorkGroupSize.x );
+	tempWorldPos.z =  uv.y *  mapSize.z/float( scaley.y * gl_WorkGroupSize.y );
 
+  
 	tempWorldPos.xz += random2(uv) *mapSize.xz/float(scaley.x * gl_WorkGroupSize.x );
 	positions[getArrayFromUV(uv)] = tempWorldPos;	
 	
 }
 
 
+void MakeNoise(vec2 uv){
+
+	vec4 col = vec4(1,1,0,1);
+    col.x =  float(uv.x)/(gl_NumWorkGroups.x * gl_WorkGroupSize.x);
+    col.y = float(uv.y )/(gl_NumWorkGroups.y * gl_WorkGroupSize.y);
+    
+    vec2 st = uv ;
+    vec3 vNoise = voroNoise(uv/1000.0, 0.05* t);
+    imageStore(imgOutput, ivec2(st), vec4(vNoise,1.0));
+}
+
 void main(){
 	
  	ivec2 uv = ivec2(gl_GlobalInvocationID.xy);
 	populatePosition(uv);
 	calcChunk(gl_WorkGroupID);
+    MakeNoise(uv);
 
-	vec3 col = 0.5 + 0.5*cos(0.+uv.xyx +vec3(0,2,4));
-	ivec2 st = ivec2(uv.xy);
+	// ivec2 st = ivec2(uv.xy)/ ivec2(gl_NumWorkGroups);
+	// vec3 col = 0.5 + 0.5*cos(0.+st.xxx +vec3(0,2,4));
 
-	vec3 vnoise = voroNoise(st/1000.0, 0.5 * t);
-	imageStore(imgOutput, st, vec4(vnoise, 1.0));
+    
+	// vec3 vnoise = voroNoise(uv/1000.0, 0.05 * t);
+	// imageStore(imgOutput, uv, vec4(vnoise, 1.0));
 }

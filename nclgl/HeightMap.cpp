@@ -19,7 +19,7 @@ HeightMap::HeightMap(const std::string& name, Vector3 vScale) {
 	indices			= new GLuint[numIndices];
 
 	Vector3 vertexScale  = vScale;
-	Vector2 textureScale = Vector2(1 / 20.0f, 1 / 20.0f);
+	Vector2 textureScale = Vector2(1 / vScale.x, 1 / vScale.z);
 
 	for (int z = 0; z < iHeight; ++z) {
 		for (int x = 0; x < iWidth; ++x) {

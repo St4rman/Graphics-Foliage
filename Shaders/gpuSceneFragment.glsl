@@ -23,13 +23,15 @@ float posDot (vec3 v1, vec3 v2){
 in Vertex{
 	vec2 texCoord;
 	vec4 colour;
+	vec3 nWorldPos;
 } IN;
 
 out vec4 fragColour;
 
 void main(void) {
 
-	vec2 uv = IN.texCoord;
+	vec2 uv 		= IN.texCoord;
+	vec3 objectPos	= IN.nWorldPos;
 
 	vec4 tipGreen 		= vec4(0.678,0.898,0.655,1);
 	vec4 bottomGreen 	= vec4(0.302,0.451,0.365,1);
@@ -38,9 +40,11 @@ void main(void) {
 
 	if(useTexture == 0){
 		// fragColour = bladeCol;
-		fragColour = bladeCol * diffuseTex.r;
+		// fragColour = vec4(IN.nWorldPos, 1.0);
+		fragColour = texture2D(diffuseTex,objectPos.xz);
+
 	}
 	else {
-		fragColour = bladeCol; 
+		fragColour =  texture2D(diffuseTex, uv);
 	}
 }

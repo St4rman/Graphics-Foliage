@@ -122,7 +122,7 @@ bool Renderer::initComputeShaders() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, 400, 400, 0, GL_RGBA, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, 200, 200, 0, GL_RGBA, GL_FLOAT, NULL);
 	glBindImageTexture(0, compVnoise, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA32F);
 
 
@@ -136,7 +136,7 @@ bool Renderer::initMeshes(){
 	heightMap	= new HeightMap(TEXTUREDIR"white.jpg", { 5.0f, 1.0f, 5.0f });
 	grassMesh	= Mesh::LoadFromMeshFile("GrassVert.msh");
 
-	std::cout << heightMap->GetHeightmapSize();
+	//std::cout << heightMap->GetHeightmapSize();
 	return heightMap->loadSuccess();
 
 }
@@ -285,7 +285,7 @@ void Renderer::DrawGrass() {
 
 	Vector3 hSize = heightMap->GetHeightmapSize();
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, ssboID);
-	
+
 	compShader->Bind();
 	compShader->Dispatch((unsigned int)SCALE.x, (unsigned int)SCALE.y, 1);
 
@@ -294,16 +294,16 @@ void Renderer::DrawGrass() {
 
 
 	glUniform3fv(glGetUniformLocation(compShader->GetProgram(), "cameraPos"), 1, (float*)&camera->GetPosition());
-	glUniform3fv(glGetUniformLocation(compShader->GetProgram(), "mapSize"), 1, (float*)&hSize);
+	glUniform3fv(glGetUniformLocation(compShader->GetProgram(), "mapSize"), 1, (float*)&Vector3(290, 0, 200));
 	glUniform1f(glGetUniformLocation(compShader->GetProgram(), "t"), (float)timer->GetTotalTimeSeconds());
 	glUniform2fv(glGetUniformLocation(compShader->GetProgram(), "scaley"), 1, (float*)&SCALE);
 	glUniform1f(glGetUniformLocation(compShader->GetProgram(), "windSpeed"), (float)0.5f);
 
 	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
-	
+
 	BindShader(gpuShader);
 
-	modelMatrix = Matrix4::Translation({ 0.0f, 225.0f + 40.0f, 0.0f }) * Matrix4::Scale({ 7.0f, 20.0f, 10.0f } );
+	modelMatrix = Matrix4::Translation({ 0.0f, 225.0f + 40.0f, 0.0f }) * Matrix4::Scale({ 7.0f, 20.0f, 10.0f });
 	textureMatrix.ToIdentity();
 
 	glActiveTexture(GL_TEXTURE0);
@@ -316,12 +316,14 @@ void Renderer::DrawGrass() {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	UpdateShaderMatrices();	
+	UpdateShaderMatrices();
 	triangle->DrawInstanced(TOTALDISPATCH);
 
-	/*modelMatrix = Matrix4::Translation({ hSize.x, 230.0f + 100.0f,hSize.z }) * Matrix4::Scale(hSize) * Matrix4::Rotation(90, { 1, 0, 0 });
+	modelMatrix = Matrix4::Translation({ 0, 230.0f + 100.0f,0  }) * Matrix4::Scale({100, 100, 100});
+	//std::cout << hSize; 
 	textureMatrix.ToIdentity();
+	glUniform1i(glGetUniformLocation(gpuShader->GetProgram(), "useTexture"), 1);
 	UpdateShaderMatrices();
-	quad->Draw();*/
+	quad->Draw();
 	
 }
