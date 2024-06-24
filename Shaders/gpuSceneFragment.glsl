@@ -41,7 +41,7 @@ void main(void) {
 	if(useTexture == 0){
 		// fragColour = bladeCol;
 		// fragColour = vec4(IN.nWorldPos, 1.0);
-		fragColour = texture2D(diffuseTex,objectPos.xz);
+		fragColour = texture2D(diffuseTex, objectPos.xz);
 
 	}
 	else {

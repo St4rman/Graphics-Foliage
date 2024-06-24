@@ -4,7 +4,9 @@ uniform mat4 		modelMatrix;
 uniform mat4 		viewMatrix;
 uniform mat4 		projMatrix;
 uniform vec4 		nodeColor;
+uniform int		  	useTexture;
 uniform sampler2D 	diffuseTex;
+uniform vec3		mapSize;
 
 uniform float t;
 layout(location = 1) uniform vec3 cameraPos;
@@ -33,13 +35,14 @@ void main(void)	{
 	// }
 
 	vec3 worldPosition = vec3(positions[gl_InstanceID].x , 0, positions[gl_InstanceID].z) + pos;
-	vec3 nWorldPos     = normalize(worldPosition);
-
-
-	vec4 noiseCol = texture2D(diffuseTex, vec2(0.5,0.5));
+	vec3 temp = worldPosition;
+	if(useTexture == 0){
+		worldPosition 	  -= mapSize/2;
+	}
+	
+	vec3 nWorldPos     = normalize(temp);
 
 	gl_Position	  = (projMatrix * viewMatrix * modelMatrix) * vec4(worldPosition, 1.0);
 	OUT.texCoord  = texCoord;
-	OUT.colour 	  = noiseCol;
-	OUT.nWorldPos = nWorldPos;
+	OUT.nWorldPos = temp/ mapSize;
 }

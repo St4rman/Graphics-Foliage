@@ -77,10 +77,11 @@ void MakeNoise(vec2 uv){
 
 	vec4 col = vec4(1,1,0,1);
     col.x =  float(uv.x)/(gl_NumWorkGroups.x * gl_WorkGroupSize.x);
-    col.y = float(uv.y )/(gl_NumWorkGroups.y * gl_WorkGroupSize.y);
+    col.y =  float(uv.x)/(gl_NumWorkGroups.x * gl_WorkGroupSize.x);
     
     vec2 st = uv ;
-    vec3 vNoise = voroNoise(uv/1000.0, 0.05* t);
+    vec3 vNoise = voroNoise(uv/123, 0.05* t);
+    // imageStore(imgOutput, ivec2(st), col);
     imageStore(imgOutput, ivec2(st), vec4(vNoise,1.0));
 }
 

@@ -303,7 +303,7 @@ void Renderer::DrawGrass() {
 
 	BindShader(gpuShader);
 
-	modelMatrix = Matrix4::Translation({ 0.0f, 225.0f + 40.0f, 0.0f }) * Matrix4::Scale({ 7.0f, 20.0f, 10.0f });
+	modelMatrix = Matrix4::Translation({ hSize.x* 0.5f, 225.0f + 40.0f,hSize.z * 0.5f }) * Matrix4::Scale({ 7.0f, 20.0f, 10.0f });
 	textureMatrix.ToIdentity();
 
 	glActiveTexture(GL_TEXTURE0);
@@ -311,6 +311,7 @@ void Renderer::DrawGrass() {
 	glUniform1i(glGetUniformLocation(gpuShader->GetProgram(), "diffuseTex"), 0);
 	glUniform1i(glGetUniformLocation(gpuShader->GetProgram(), "useTexture"), 0);
 	glUniform3fv(glGetUniformLocation(gpuShader->GetProgram(), "lightPos"), 1, (float*)&light->GetPosition());
+	glUniform3fv(glGetUniformLocation(compShader->GetProgram(), "mapSize"), 1, (float*)&Vector3(290, 0, 200));
 	glUniform1f(glGetUniformLocation(gpuShader->GetProgram(), "t"), (float)timer->GetTotalTimeSeconds());
 
 	glEnable(GL_BLEND);
@@ -319,7 +320,7 @@ void Renderer::DrawGrass() {
 	UpdateShaderMatrices();
 	triangle->DrawInstanced(TOTALDISPATCH);
 
-	modelMatrix = Matrix4::Translation({ 0, 230.0f + 100.0f,0  }) * Matrix4::Scale({100, 100, 100});
+	modelMatrix = Matrix4::Translation({ 0, 230.0f + 100.0f,0  }) * Matrix4::Scale({100, 100, 100} ) * Matrix4::Rotation(90, {1,0,0});
 	//std::cout << hSize; 
 	textureMatrix.ToIdentity();
 	glUniform1i(glGetUniformLocation(gpuShader->GetProgram(), "useTexture"), 1);
