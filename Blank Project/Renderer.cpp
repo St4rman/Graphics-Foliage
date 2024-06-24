@@ -26,6 +26,9 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
 
 	timer = parent.GetTimer();
 	
+	windSpeed = 0.05;
+	windDir   = { 1,1 };
+
 	init = true;
 	
 }
@@ -297,7 +300,8 @@ void Renderer::DrawGrass() {
 	glUniform3fv(glGetUniformLocation(compShader->GetProgram(), "mapSize"), 1, (float*)&Vector3(290, 0, 200));
 	glUniform1f(glGetUniformLocation(compShader->GetProgram(), "t"), (float)timer->GetTotalTimeSeconds());
 	glUniform2fv(glGetUniformLocation(compShader->GetProgram(), "scaley"), 1, (float*)&SCALE);
-	glUniform1f(glGetUniformLocation(compShader->GetProgram(), "windSpeed"), (float)0.5f);
+	glUniform1f(glGetUniformLocation(compShader->GetProgram(), "windSpeed"), (float)windSpeed);
+	glUniform2fv(glGetUniformLocation(compShader->GetProgram(), "windDir"), 1, (float*)&windDir);
 
 	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 

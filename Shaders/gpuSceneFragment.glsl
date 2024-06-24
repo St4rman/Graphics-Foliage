@@ -33,15 +33,16 @@ void main(void) {
 	vec2 uv 		= IN.texCoord;
 	vec3 objectPos	= IN.nWorldPos;
 
-	vec4 tipGreen 		= vec4(0.678,0.898,0.655,1);
-	vec4 bottomGreen 	= vec4(0.302,0.451,0.365,1);
+	vec4 tipGreen 		= vec4(0.3725, 0.9529, 0.3059, 1.0);
+	vec4 bottomGreen 	= vec4(0.0, 0.2588, 0.1098, 1.0);
 
 	vec4 bladeCol 	 = uLerp(tipGreen, bottomGreen, uv.y);
 
+	vec4 windValue   =  texture2D(diffuseTex, objectPos.xz);
+
 	if(useTexture == 0){
-		// fragColour = bladeCol;
+		fragColour = uLerp(windValue, bladeCol, uv.y);
 		// fragColour = vec4(IN.nWorldPos, 1.0);
-		fragColour = texture2D(diffuseTex, objectPos.xz);
 
 	}
 	else {

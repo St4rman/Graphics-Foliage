@@ -88,5 +88,8 @@ protected:
 
 	GLuint ssboID	=0;
 	GLuint ssboGB = 0;
+
+	float windSpeed;
+	Vector2 windDir;
 };
 

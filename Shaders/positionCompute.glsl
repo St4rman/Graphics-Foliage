@@ -8,6 +8,7 @@ uniform vec3 cameraPos;
 uniform vec3 mapSize;
 uniform vec2 scaley;
 uniform float windSpeed;
+uniform vec2 windDir;
 
 layout(binding = 2, std430) buffer ssbo1 {
 	vec3 positions[40000];
@@ -18,23 +19,30 @@ vec2 random2( vec2 p ) {
     return fract(sin(vec2(dot(p,vec2(127.1,311.7)),dot(p,vec2(269.5,183.3))))*43758.5453);
 }
 
+vec2 rotate(vec2 v, float a) {
+	float s = sin(a);
+	float c = cos(a);
+	mat2 m = mat2(c, s, -s, c);
+	return m * v;
+}
+
 vec3 voroNoise(vec2 st, float angleOffset){
-    st *= 4.0;
-	st += t * windSpeed;
+	st += t * windSpeed * windDir;
+    st *= 6.0;
 	
-    vec3 color = vec3(.0);
+    vec3 color = vec3(0.0, 0.0, 0.0);
 
     vec2 i_st = floor(st);
     vec2 f_st = fract(st);
 
-    float m_dist = 10.;  // minimum distance
+    float m_dist = 1.;  // minimum distance
     vec2 m_point;        // minimum point
 
     for (int j=-1; j<=1; j++ ) {
         for (int i=-1; i<=1; i++ ) {
             vec2 neighbor = vec2(float(i),float(j));
             vec2 point = random2(i_st + neighbor);
-            point = 0.5 + 0.5*sin(angleOffset* point);
+            // point = 0.5 + 0.5*sin(angleOffset* point);
             vec2 diff = neighbor + point - f_st;
             float dist = length(diff);
 
@@ -47,7 +55,7 @@ vec3 voroNoise(vec2 st, float angleOffset){
 
     color += m_dist;
 	color = vec3(smoothstep(0.00001,0.7, m_dist));
-
+    color *= vec3(0.0, 1.0, 0.7647);
     return color;
 }
 
@@ -80,7 +88,7 @@ void MakeNoise(vec2 uv){
     col.y =  float(uv.x)/(gl_NumWorkGroups.x * gl_WorkGroupSize.x);
     
     vec2 st = uv ;
-    vec3 vNoise = voroNoise(uv/123, 0.05* t);
+    vec3 vNoise = voroNoise(uv/1000, 0.05* t);
     // imageStore(imgOutput, ivec2(st), col);
     imageStore(imgOutput, ivec2(st), vec4(vNoise,1.0));
 }
