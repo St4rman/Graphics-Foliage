@@ -33,6 +33,6 @@ void main(void)	{
 	fragColour.rgb  = surface* lambert * atten;
 	fragColour.rgb += (lightColor.rgb * specFactor)*atten*0.33;
 	fragColour.rgb +=  surface * 0.1f;
+	fragColour.rgb *= vec3(0.0, 0.4275, 0.1765);
 	fragColour.a  = diffuse.a;
-
 }

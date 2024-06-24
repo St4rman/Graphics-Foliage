@@ -1,7 +1,9 @@
 #include "Renderer.h"
 
 Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
-	
+	SCALE = { 20, 20 };
+	TOTALDISPATCH = SCALE.x * SCALE.y * 10 * 10;
+
 	if (!initShaders())  return;
 	if (!initTextures()) return;
 	if (!initMeshes())   return;
@@ -11,7 +13,7 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
 	Vector3 heightmapSize = heightMap->GetHeightmapSize();
 
 	camera = new Camera(-45.0f, 0.0f, heightmapSize * Vector3(0.5f, 5.0f, 0.5f));
-	light = new Light(heightmapSize * Vector3(0.5f, 5.0, 0.5f), Vector4(1, 1, 1, 1), heightmapSize.x);
+	light = new Light(heightmapSize * Vector3(0.5f, 10.0, 0.5f), Vector4(1, 1, 1, 1), 10000);
 
 	localOrigin = heightmapSize * Vector3(0.5f, 5.0f, 0.5f);
 
@@ -23,29 +25,43 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
 	timer = parent.GetTimer();
+	
+	windSpeed = 0.05;
+	windDir   = { 1,1 };
+	windFwdSway = 80;
+	windRightSway = 45;
+
 	init = true;
+	
 }
 
 Renderer::~Renderer(void) {
 
-	delete camera;
 	delete heightMap;
 	delete root;
 	delete quad;
+	delete triangle;
+	delete grassMesh;
+	delete light;
+	delete camera;
+	delete timer;
 
 	//ALL SHADERS!!!
+	delete lightShader;
 	delete reflectShader;
 	delete skyboxShader;
-	delete lightShader;
 	delete sceneShader;
-
-	delete light;
+	delete gpuShader;
+	delete compShader;
 
 	//DELETE ALL TEXTURES!!!
+	glDeleteTextures(1, &cubeMap);
 	glDeleteTextures(1, &waterTex);
 	glDeleteTextures(1, &earthTex);
-	glDeleteTextures(1, &earthBump);
 	glDeleteTextures(1, &debugTex);
+	glDeleteTextures(1, &earthBump);
+	glDeleteTextures(1, &grassTex);
+	glDeleteTextures(1, &compVnoise);
 }
 void Renderer::ClearNodeLists() {
 	transperentNodeList.clear();
@@ -55,8 +71,8 @@ void Renderer::ClearNodeLists() {
 bool Renderer::initTextures() {
 
 	waterTex = SOIL_load_OGL_texture(TEXTUREDIR"water.TGA", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
-	earthTex = SOIL_load_OGL_texture(TEXTUREDIR"BarrenReds.JPG", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
-	earthBump = SOIL_load_OGL_texture(TEXTUREDIR"BarrenRedsDOT3.JPG", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+	earthTex = SOIL_load_OGL_texture(TEXTUREDIR"base_grass.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+	earthBump = SOIL_load_OGL_texture(TEXTUREDIR"base_grassN.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
 	debugTex = SOIL_load_OGL_texture(TEXTUREDIR"test.jpg", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
 	grassTex = SOIL_load_OGL_texture(TEXTUREDIR"grassbush.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
 
@@ -100,17 +116,33 @@ bool Renderer::initComputeShaders() {
 	if (!compShader->LoadSuccess()) return false;
 
 	glCreateBuffers(1, &ssboID);
-	glNamedBufferStorage(ssboID, 3 * 400* sizeof(GLfloat) * 4 * sizeof(GLfloat), 0, GL_DYNAMIC_STORAGE_BIT);
+	glNamedBufferStorage(ssboID, 3 * TOTALDISPATCH * sizeof(GLfloat) * 4 * sizeof(GLfloat), 0, GL_DYNAMIC_STORAGE_BIT);
+
+
+	glGenTextures(1, &compVnoise);
+	glActiveTexture(GL_TEXTURE0);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, compVnoise);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, 200, 200, 0, GL_RGBA, GL_FLOAT, NULL);
+	glBindImageTexture(0, compVnoise, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA32F);
+
 
 	return true;
 }
 
 bool Renderer::initMeshes(){
 
-	quad = Mesh::GenerateQuad();
-	triangle = Mesh::GenerateTriangle();
-	heightMap = new HeightMap(TEXTUREDIR"white.jpg", { 5.0f, 1.0f, 5.0f });
-	std::cout << heightMap->GetHeightmapSize();
+	quad		= Mesh::GenerateQuad();
+	triangle	= Mesh::GenerateTriangle();
+	triangle->GenerateNormals();
+	heightMap	= new HeightMap(TEXTUREDIR"white.jpg", { 5.0f, 1.0f, 5.0f });
+	grassMesh	= Mesh::LoadFromMeshFile("GrassVert.msh");
+
+	//std::cout << heightMap->GetHeightmapSize();
 	return heightMap->loadSuccess();
 
 }
@@ -233,6 +265,7 @@ void Renderer::DrawSkybox() {
 void Renderer::DrawHeightMap() {
 
 	BindShader(lightShader);
+
 	SetShaderLight(*light);
 
 	glUniform3fv(glGetUniformLocation(lightShader->GetProgram(), "cameraPos"), 1, (float*)&camera->GetPosition());
@@ -250,38 +283,58 @@ void Renderer::DrawHeightMap() {
 
 	UpdateShaderMatrices();
 
-	heightMap->Draw();
+	heightMap->DrawInstanced(1);
 
 }
 
 void Renderer::DrawGrass() {
 
-	//compute shader bullshit
 	Vector3 hSize = heightMap->GetHeightmapSize();
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, ssboID);
-	
+
 	compShader->Bind();
-	compShader->Dispatch((unsigned int)20, (unsigned int)20, 1);
+	compShader->Dispatch((unsigned int)SCALE.x, (unsigned int)SCALE.y, 1);
+
+
+	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+
+
 	glUniform3fv(glGetUniformLocation(compShader->GetProgram(), "cameraPos"), 1, (float*)&camera->GetPosition());
-	glUniform3fv(glGetUniformLocation(compShader->GetProgram(), "mapSize"), 1, (float*)&hSize);
+	glUniform3fv(glGetUniformLocation(compShader->GetProgram(), "mapSize"), 1, (float*)&Vector3(290, 0, 200));
 	glUniform1f(glGetUniformLocation(compShader->GetProgram(), "t"), (float)timer->GetTotalTimeSeconds());
-	glUniform1i(glGetUniformLocation(compShader->GetProgram(), "scale"), (int)20);
+	glUniform2fv(glGetUniformLocation(compShader->GetProgram(), "scaley"), 1, (float*)&SCALE);
+	glUniform1f(glGetUniformLocation(compShader->GetProgram(), "windSpeed"), (float)windSpeed);
+	glUniform2fv(glGetUniformLocation(compShader->GetProgram(), "windDir"), 1, (float*)&windDir);
 
 	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
-	
+
 	BindShader(gpuShader);
 
-	modelMatrix = Matrix4::Translation({ 0.0f, 225.0f + 80.0f, 0.0f }) * Matrix4::Scale({ 80.0f, 80.0f, 80.0f }) * Matrix4::Rotation(180, {0,0,1});
+	modelMatrix = Matrix4::Translation({ hSize.x* 0.5f, 225.0f + 40.0f,hSize.z * 0.5f }) * Matrix4::Scale({ 7.0f, 20.0f, 10.0f });
 	textureMatrix.ToIdentity();
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, grassTex);
+	glBindTexture(GL_TEXTURE_2D, compVnoise);
 	glUniform1i(glGetUniformLocation(gpuShader->GetProgram(), "diffuseTex"), 0);
+	glUniform1i(glGetUniformLocation(gpuShader->GetProgram(), "useTexture"), 0);
+	glUniform3fv(glGetUniformLocation(gpuShader->GetProgram(), "lightPos"), 1, (float*)&light->GetPosition());
+	glUniform3fv(glGetUniformLocation(compShader->GetProgram(), "mapSize"), 1, (float*)&Vector3(290, 0, 200));
+	glUniform1f(glGetUniformLocation(gpuShader->GetProgram(), "t"), (float)timer->GetTotalTimeSeconds());
+	glUniform1f(glGetUniformLocation(gpuShader->GetProgram(), "windFwdSway"), (float)windFwdSway);
+	glUniform1f(glGetUniformLocation(gpuShader->GetProgram(), "windRightSway"), (float)windRightSway);
+	glUniform2fv(glGetUniformLocation(gpuShader->GetProgram(), "windDir"), 1, (float*)&windDir);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	UpdateShaderMatrices();	
-	Mesh* qaub = Mesh::LoadFromMeshFile("grass.msh");
-	qaub->DrawInstanced(400);
+	UpdateShaderMatrices();
+	triangle->DrawInstanced(TOTALDISPATCH);
+
+	//modelMatrix = Matrix4::Translation({ 0, 230.0f + 100.0f,0  }) * Matrix4::Scale({100, 100, 100} ) * Matrix4::Rotation(90, {1,0,0});
+	////std::cout << hSize; 
+	//textureMatrix.ToIdentity();
+	//glUniform1i(glGetUniformLocation(gpuShader->GetProgram(), "useTexture"), 1);
+	//UpdateShaderMatrices();
+	//quad->Draw();
+	
 }

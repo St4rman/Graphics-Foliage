@@ -24,6 +24,7 @@ public:
 	void RenderScene() override;
 	void UpdateScene(float dt) override;
 
+
 	
 
 protected:
@@ -47,6 +48,10 @@ protected:
 	void DrawNode(SceneNode* n);
 	void ClearNodeLists();
 
+
+	Vector2 SCALE = { 0,0 };
+	int		TOTALDISPATCH = 0;
+
 	Shader* lightShader;
 	Shader* reflectShader;
 	Shader* skyboxShader;
@@ -65,6 +70,7 @@ protected:
 	SceneNode* root;
 	Mesh* quad;
 	Mesh* triangle;
+	Mesh* grassMesh;
 
 	Light* light;
 	Camera* camera;
@@ -72,14 +78,20 @@ protected:
 
 	Vector3 localOrigin;
 
-	GLuint cubeMap = 0;
-	GLuint waterTex = 0;
-	GLuint earthTex = 0;
-	GLuint debugTex = 0;
-	GLuint earthBump = 0;
-	GLuint grassTex = 0;
+	GLuint cubeMap		= 0;
+	GLuint waterTex		= 0;
+	GLuint earthTex		= 0;
+	GLuint debugTex		= 0;
+	GLuint earthBump	= 0;
+	GLuint grassTex		= 0;
+	GLuint compVnoise	= 0;
 
 	GLuint ssboID	=0;
 	GLuint ssboGB = 0;
+
+	float windSpeed;
+	float windFwdSway;
+	float windRightSway;
+	Vector2 windDir;
 };
 

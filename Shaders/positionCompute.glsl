@@ -1,39 +1,108 @@
 #version 430 core
 
-layout(local_size_x = 1, local_size_y =1, local_size_z = 1) in;
+layout(local_size_x = 10, local_size_y =10, local_size_z = 1) in;
 layout(rgba32f, binding = 0) uniform image2D imgOutput;
 layout(location = 0) uniform float t;
+
 uniform vec3 cameraPos;
 uniform vec3 mapSize;
-uniform int scale;
+uniform vec2 scaley;
+uniform float windSpeed;
+uniform vec2 windDir;
 
 layout(binding = 2, std430) buffer ssbo1 {
-	vec3 positions[400];
+	vec3 positions[40000];
 	vec4 color;
 };
 
+vec2 random2( vec2 p ) {
+    return fract(sin(vec2(dot(p,vec2(127.1,311.7)),dot(p,vec2(269.5,183.3))))*43758.5453);
+}
+
+vec2 rotate(vec2 v, float a) {
+	float s = sin(a);
+	float c = cos(a);
+	mat2 m = mat2(c, s, -s, c);
+	return m * v;
+}
+
+vec3 voroNoise(vec2 st, float angleOffset){
+	st += t * windSpeed * normalize(windDir);
+    st *= 6.0;
+	
+    vec3 color = vec3(0.0, 0.0, 0.0);
+
+    vec2 i_st = floor(st);
+    vec2 f_st = fract(st);
+
+    float m_dist = 1.;  // minimum distance
+    vec2 m_point;        // minimum point
+
+    for (int j=-1; j<=1; j++ ) {
+        for (int i=-1; i<=1; i++ ) {
+            vec2 neighbor = vec2(float(i),float(j));
+            vec2 point = random2(i_st + neighbor);
+            // point = 0.5 + 0.5*sin(angleOffset* point);
+            vec2 diff = neighbor + point - f_st;
+            float dist = length(diff);
+
+            if( dist < m_dist ) {
+                m_dist = dist;
+                m_point = point;
+            }
+        }
+    }
+
+    color += m_dist;
+	color = vec3(smoothstep(0.001,0.9, m_dist));
+    return color;
+}
+
+//CONDITIONAL BOTH SCALES SHOULD BE EQUAL FOR THIS TO WORK 
 int getArrayFromUV(vec2 uv){
-	return int(uv.x) + scale * int(uv.y);
+	return int( scaley.x *gl_WorkGroupSize.x* uv.x) +   int(uv.y);
 }
 
-void calcChunk(vec2 uv){
-	color = vec4(0,1,0,1);
+void calcChunk(vec3 uv){
+	
 }
 
-void populatePosition(vec2 uvID){
+void populatePosition(vec2 uv){
 
-	vec2 temp;
-	temp.x = uvID.x * mapSize.x/float(scale);
-	temp.y = uvID.y * mapSize.z/float(scale);
-	positions[getArrayFromUV(uvID)] = vec3(temp.x, 0, temp.y);	
+	vec3 tempWorldPos;
+	tempWorldPos.x =  uv.x *  mapSize.x/float( scaley.x * gl_WorkGroupSize.x );
+	tempWorldPos.z =  uv.y *  mapSize.z/float( scaley.y * gl_WorkGroupSize.y );
 
+  
+	tempWorldPos.xz += random2(uv) *mapSize.xz/float(scaley.x * gl_WorkGroupSize.x );
+	positions[getArrayFromUV(uv)] = tempWorldPos;	
+	
 }
 
+
+void MakeNoise(vec2 uv){
+
+	vec4 col = vec4(1,1,0,1);
+    col.x =  float(uv.x)/(gl_NumWorkGroups.x * gl_WorkGroupSize.x);
+    col.y =  float(uv.x)/(gl_NumWorkGroups.x * gl_WorkGroupSize.x);
+    
+    vec2 st = uv ;
+    vec3 vNoise = voroNoise(uv/1000, 0.05* t);
+    // imageStore(imgOutput, ivec2(st), col);
+    imageStore(imgOutput, ivec2(st), vec4(vNoise,1.0));
+}
 
 void main(){
 	
  	ivec2 uv = ivec2(gl_GlobalInvocationID.xy);
 	populatePosition(uv);
-	calcChunk(uv);
+	calcChunk(gl_WorkGroupID);
+    MakeNoise(uv);
 
+	// ivec2 st = ivec2(uv.xy)/ ivec2(gl_NumWorkGroups);
+	// vec3 col = 0.5 + 0.5*cos(0.+st.xxx +vec3(0,2,4));
+
+    
+	// vec3 vnoise = voroNoise(uv/1000.0, 0.05 * t);
+	// imageStore(imgOutput, uv, vec4(vnoise, 1.0));
 }
