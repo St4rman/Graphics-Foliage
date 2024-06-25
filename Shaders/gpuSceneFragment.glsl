@@ -89,7 +89,7 @@ void main(void) {
 		
 		finCol = bladeCol;
 		finCol *= aoCol;
-		finCol = windValue;
+		// finCol = windValue;
 	}
 	else {
 		finCol =  texture2D(diffuseTex, uv);
