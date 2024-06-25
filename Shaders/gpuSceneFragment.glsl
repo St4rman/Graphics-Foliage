@@ -3,6 +3,7 @@
 uniform sampler2D diffuseTex;
 uniform int		  useTexture;
 uniform float 	  t;
+uniform vec3      cameraPos;
 
 float contrast   = 0.99;
 float saturation = 1.9;
@@ -69,17 +70,11 @@ mat4 brightnessMatrix( float brightness )
                  brightness, brightness, brightness, 1 );
 }
 
-
-void main(void) {
-
-	vec2 uv 		= IN.texCoord;
-	vec3 objectPos	= IN.nWorldPos;
-
+vec4 colorize(vec2 uv, vec3 objectPos){
+	
 	vec4 bladeCol 	 = mix(topGreen, bottomGreen, uv.y);
-
 	vec4 windValue   =  texture2D(diffuseTex, objectPos.xz);
 	// windValue 		*= vec4(1.0, 1.0, 1.0, 1.0);
-
 	vec4 aoCol 		= mix(vec4(1.0f), AoColor, uv.y);
 	float tip 		= mix(0.0f, float(tip), uv.y * uv.y);
 
@@ -94,8 +89,15 @@ void main(void) {
 	else {
 		finCol =  texture2D(diffuseTex, uv);
 	}
-	
-	fragColour = contrastMatrix(contrast) * satMatrix(saturation) *finCol;
+	return finCol;
+}
+
+
+void main(void) {
+
+	vec2 uv 		= IN.texCoord;
+	vec3 objectPos	= IN.nWorldPos;
+	fragColour = contrastMatrix(contrast) * satMatrix(saturation) * colorize(uv, objectPos);
 	fragColour.rgb = pow(fragColour.rgb, vec3(1.0/gamma));
 
 }

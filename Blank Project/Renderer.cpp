@@ -139,6 +139,7 @@ bool Renderer::initMeshes(){
 	quad		= Mesh::GenerateQuad();
 	triangle	= Mesh::GenerateTriangle();
 	triangle->GenerateNormals();
+	triangle->GenerateTangents();
 	heightMap	= new HeightMap(TEXTUREDIR"white.jpg", { 5.0f, 1.0f, 5.0f });
 	grassMesh	= Mesh::LoadFromMeshFile("GrassVert.msh");
 
@@ -298,8 +299,6 @@ void Renderer::DrawGrass() {
 
 	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
-
-	glUniform3fv(glGetUniformLocation(compShader->GetProgram(), "cameraPos"), 1, (float*)&camera->GetPosition());
 	glUniform3fv(glGetUniformLocation(compShader->GetProgram(), "mapSize"), 1, (float*)&Vector3(290, 0, 200));
 	glUniform1f(glGetUniformLocation(compShader->GetProgram(), "t"), (float)timer->GetTotalTimeSeconds());
 	glUniform2fv(glGetUniformLocation(compShader->GetProgram(), "scaley"), 1, (float*)&SCALE);
@@ -323,6 +322,7 @@ void Renderer::DrawGrass() {
 	glUniform1f(glGetUniformLocation(gpuShader->GetProgram(), "windFwdSway"), (float)windFwdSway);
 	glUniform1f(glGetUniformLocation(gpuShader->GetProgram(), "windRightSway"), (float)windRightSway);
 	glUniform2fv(glGetUniformLocation(gpuShader->GetProgram(), "windDir"), 1, (float*)&windDir);
+	glUniform3fv(glGetUniformLocation(gpuShader->GetProgram(), "cameraPos"), 1, (float*)&camera->GetPosition());
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
