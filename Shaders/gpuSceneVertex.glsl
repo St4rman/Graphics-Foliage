@@ -60,12 +60,6 @@ void main(void)	{
 		vec3 windRight = normalize(cross(windFwd, UP));
 
 		float x =  radians(windRightSway) * windStrength;
-		float z =  radians(windFwdSway)   * windStrength;
-		//flipping this here because for some reasion these are flipped
-		pos = rotMat(z, windRight) *rotMat(x, windFwd) * pos;
-	
-
-		float x =  radians(windRightSway) * windStrength;
 		float z = radians(windFwdSway) * windStrength;
 		//flipping this here because for some reasion these are flipped
 		pos = rotMat(z, windRight) *rotMat(x, windFwd) * pos;
