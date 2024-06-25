@@ -310,7 +310,7 @@ void Renderer::DrawGrass() {
 
 	BindShader(gpuShader);
 
-	modelMatrix = Matrix4::Translation({ hSize.x* 0.5f, 225.0f + 40.0f,hSize.z * 0.5f }) * Matrix4::Scale({ 7.0f, 20.0f, 10.0f });
+	modelMatrix = Matrix4::Translation({ hSize.x* 0.5f, 225.0f + 60.0f,hSize.z * 0.5f }) * Matrix4::Scale({ 7.0f, 30.0f, 10.0f });
 	textureMatrix.ToIdentity();
 
 	glActiveTexture(GL_TEXTURE0);
