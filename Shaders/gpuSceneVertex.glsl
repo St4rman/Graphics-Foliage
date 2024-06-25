@@ -56,20 +56,21 @@ void main(void)	{
 
 	if(pos.y > 0.1f){
 
-		vec3 windFwd = mat3(modelMatrix) * vec3(windDir.x, 0, windDir.y);
+		vec3 windFwd = mat3(modelMatrix) * vec3(windDir.x, 0, -windDir.y);
 		vec3 windRight = normalize(cross(windFwd, UP));
-<<<<<<< Updated upstream
-		float x =  radians(windFwdSway) * windStrength;
-		float z = radians(windRightSway) * sin(t) * windStrength;
-		pos = rotMat(z, windRight) * pos;
-		pos = rotMat(x, windFwd) * pos;
-=======
+
 		float x =  radians(windRightSway) * windStrength;
 		float z =  radians(windFwdSway)   * windStrength;
 		//flipping this here because for some reasion these are flipped
 		pos = rotMat(z, windRight) *rotMat(x, windFwd) * pos;
 	
->>>>>>> Stashed changes
+
+		float x =  radians(windRightSway) * windStrength;
+		float z = radians(windFwdSway) * windStrength;
+		//flipping this here because for some reasion these are flipped
+		pos = rotMat(z, windRight) *rotMat(x, windFwd) * pos;
+	
+
 	}
 	
 	//this is the final postion. Any changes to individual blades should be done above

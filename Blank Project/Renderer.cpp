@@ -27,9 +27,9 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
 	timer = parent.GetTimer();
 	
 	windSpeed = 0.05;
-	windDir   = { 1,1 };
+	windDir   = { 0,1 };
 	windFwdSway = 80;
-	windRightSway = 45;
+	windRightSway = 0;
 
 	init = true;
 	
