@@ -27,7 +27,7 @@ vec2 rotate(vec2 v, float a) {
 
 vec3 voroNoise(vec2 st, float angleOffset){
 	st += t * windSpeed * normalize(windDir);
-    st *= 6.0;
+    st *= 10.0;
 	
     vec3 color = vec3(0.0, 0.0, 0.0);
 
@@ -97,11 +97,4 @@ void main(){
 	populatePosition(uv);
 	calcChunk(gl_WorkGroupID);
     MakeNoise(uv);
-
-	// ivec2 st = ivec2(uv.xy)/ ivec2(gl_NumWorkGroups);
-	// vec3 col = 0.5 + 0.5*cos(0.+st.xxx +vec3(0,2,4));
-
-    
-	// vec3 vnoise = voroNoise(uv/1000.0, 0.05 * t);
-	// imageStore(imgOutput, uv, vec4(vnoise, 1.0));
 }
