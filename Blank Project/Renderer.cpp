@@ -26,9 +26,9 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
 
 	timer = parent.GetTimer();
 	
-	windSpeed = 0.05;
+	windSpeed = 0.06;
 	windDir   = { 0,1 };
-	windFwdSway = 80;
+	windFwdSway = 100;
 	windRightSway = 0;
 
 	init = true;
@@ -139,6 +139,7 @@ bool Renderer::initMeshes(){
 	quad		= Mesh::GenerateQuad();
 	triangle	= Mesh::GenerateTriangle();
 	triangle->GenerateNormals();
+	triangle->GenerateTangents();
 	heightMap	= new HeightMap(TEXTUREDIR"white.jpg", { 5.0f, 1.0f, 5.0f });
 	grassMesh	= Mesh::LoadFromMeshFile("GrassVert.msh");
 
@@ -298,8 +299,6 @@ void Renderer::DrawGrass() {
 
 	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
-
-	glUniform3fv(glGetUniformLocation(compShader->GetProgram(), "cameraPos"), 1, (float*)&camera->GetPosition());
 	glUniform3fv(glGetUniformLocation(compShader->GetProgram(), "mapSize"), 1, (float*)&Vector3(290, 0, 200));
 	glUniform1f(glGetUniformLocation(compShader->GetProgram(), "t"), (float)timer->GetTotalTimeSeconds());
 	glUniform2fv(glGetUniformLocation(compShader->GetProgram(), "scaley"), 1, (float*)&SCALE);
@@ -309,6 +308,7 @@ void Renderer::DrawGrass() {
 	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
 	BindShader(gpuShader);
+	//SetShaderLight(*light);
 
 	modelMatrix = Matrix4::Translation({ hSize.x* 0.5f, 225.0f + 60.0f,hSize.z * 0.5f }) * Matrix4::Scale({ 7.0f, 30.0f, 10.0f });
 	textureMatrix.ToIdentity();
@@ -317,12 +317,12 @@ void Renderer::DrawGrass() {
 	glBindTexture(GL_TEXTURE_2D, compVnoise);
 	glUniform1i(glGetUniformLocation(gpuShader->GetProgram(), "diffuseTex"), 0);
 	glUniform1i(glGetUniformLocation(gpuShader->GetProgram(), "useTexture"), 0);
-	glUniform3fv(glGetUniformLocation(gpuShader->GetProgram(), "lightPos"), 1, (float*)&light->GetPosition());
 	glUniform3fv(glGetUniformLocation(compShader->GetProgram(), "mapSize"), 1, (float*)&Vector3(290, 0, 200));
 	glUniform1f(glGetUniformLocation(gpuShader->GetProgram(), "t"), (float)timer->GetTotalTimeSeconds());
 	glUniform1f(glGetUniformLocation(gpuShader->GetProgram(), "windFwdSway"), (float)windFwdSway);
 	glUniform1f(glGetUniformLocation(gpuShader->GetProgram(), "windRightSway"), (float)windRightSway);
 	glUniform2fv(glGetUniformLocation(gpuShader->GetProgram(), "windDir"), 1, (float*)&windDir);
+	glUniform3fv(glGetUniformLocation(gpuShader->GetProgram(), "cameraPos"), 1, (float*)&camera->GetPosition());
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

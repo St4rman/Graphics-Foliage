@@ -4,7 +4,6 @@ layout(local_size_x = 10, local_size_y =10, local_size_z = 1) in;
 layout(rgba32f, binding = 0) uniform image2D imgOutput;
 layout(location = 0) uniform float t;
 
-uniform vec3 cameraPos;
 uniform vec3 mapSize;
 uniform vec2 scaley;
 uniform float windSpeed;

@@ -3,18 +3,18 @@
 uniform sampler2D diffuseTex;
 uniform int		  useTexture;
 uniform float 	  t;
+uniform vec3      cameraPos;
+
 
 float contrast   = 0.99;
-float saturation = 1.9;
+float saturation = 1.5;
 float brightness = 0.1;
 float gamma      = 2.2;
 
 vec4 AoColor = vec4( 0,0,0,1);
 vec4 topGreen 		= vec4(0.2824, 0.749, 0.2314, 1.0);
 vec4 bottomGreen 	= vec4(0.1294, 0.3294, 0.1059, 1.0);
-vec4 tip			= vec4(1,1,1,1);
 
-uniform vec3 lightPos;
 
 layout (binding  = 2, std430) readonly buffer ssbo1 { 
 	vec3 positions[40000];
@@ -24,13 +24,12 @@ layout (binding  = 2, std430) readonly buffer ssbo1 {
 
 in Vertex{
 	vec2 texCoord;
-	vec4 colour;
+	vec3 worldPos;
 	vec3 nWorldPos;
 	vec3 normal;
 } IN;
 
 out vec4 fragColour;
-
 
 mat4 satMatrix( float saturation){
 	vec3 luminance = vec3( 0.3086, 0.6094, 0.0820 );
@@ -69,33 +68,39 @@ mat4 brightnessMatrix( float brightness )
                  brightness, brightness, brightness, 1 );
 }
 
-
-void main(void) {
-
-	vec2 uv 		= IN.texCoord;
-	vec3 objectPos	= IN.nWorldPos;
-
+//////////////////// FLAT COLORIZATION !!! ///////////////////////////////
+vec4 colorize(vec2 uv, vec3 objectPos){
+	
 	vec4 bladeCol 	 = mix(topGreen, bottomGreen, uv.y);
-
 	vec4 windValue   =  texture2D(diffuseTex, objectPos.xz);
 	// windValue 		*= vec4(1.0, 1.0, 1.0, 1.0);
-
 	vec4 aoCol 		= mix(vec4(1.0f), AoColor, uv.y);
-	float tip 		= mix(0.0f, float(tip), uv.y * uv.y);
+	vec4 tip 		= 0.5 * clamp(1.0 -  (windValue * 2.0), 0.0, 1.0);
+	tip = mix(vec4(0.0), tip, uv.y - 0.5);
 
 	vec4 finCol = vec4(0,0,0,1);
 
 	if(useTexture == 0){
 		
 		finCol = bladeCol;
+		finCol += vec4(tip);
 		finCol *= aoCol;
 		// finCol = windValue;
 	}
 	else {
 		finCol =  texture2D(diffuseTex, uv);
 	}
-	
-	fragColour = contrastMatrix(contrast) * satMatrix(saturation) *finCol;
-	fragColour.rgb = pow(fragColour.rgb, vec3(1.0/gamma));
+	return finCol;
+}
 
+void Lighting(vec3 objPos){
+	
+}
+
+void main(void) {
+
+	vec2 uv 		= IN.texCoord;
+	vec3 objectPos	= IN.nWorldPos;
+	fragColour = contrastMatrix(contrast) * satMatrix(saturation) * colorize(uv, objectPos);
+	fragColour.rgb = pow(fragColour.rgb, vec3(1.0/gamma));
 }
