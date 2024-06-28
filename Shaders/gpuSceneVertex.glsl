@@ -69,7 +69,6 @@ void main(void)	{
 		//flipping this here because for some reasion these are flipped
 		pos = rotMat(z, windRight) *rotMat(x, windFwd) * pos;
 	
-
 	}
 	
 	//this is the final postion. Any changes to individual blades should be done above

@@ -87,7 +87,6 @@ void MakeNoise(vec2 uv){
     
     vec2 st = uv ;
     vec3 vNoise = voroNoise(uv/1000, 0.05* t);
-    // imageStore(imgOutput, ivec2(st), col);
     imageStore(imgOutput, ivec2(st), vec4(vNoise,1.0));
 }
 
@@ -97,11 +96,4 @@ void main(){
 	populatePosition(uv);
 	calcChunk(gl_WorkGroupID);
     MakeNoise(uv);
-
-	// ivec2 st = ivec2(uv.xy)/ ivec2(gl_NumWorkGroups);
-	// vec3 col = 0.5 + 0.5*cos(0.+st.xxx +vec3(0,2,4));
-
-    
-	// vec3 vnoise = voroNoise(uv/1000.0, 0.05 * t);
-	// imageStore(imgOutput, uv, vec4(vnoise, 1.0));
 }
