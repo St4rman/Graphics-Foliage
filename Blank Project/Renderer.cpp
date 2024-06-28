@@ -143,7 +143,6 @@ bool Renderer::initMeshes(){
 	heightMap	= new HeightMap(TEXTUREDIR"white.jpg", { 5.0f, 1.0f, 5.0f });
 	grassMesh	= Mesh::LoadFromMeshFile("GrassVert.msh");
 
-	//std::cout << heightMap->GetHeightmapSize();
 	return heightMap->loadSuccess();
 
 }
