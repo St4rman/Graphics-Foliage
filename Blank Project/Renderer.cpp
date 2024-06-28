@@ -308,6 +308,7 @@ void Renderer::DrawGrass() {
 	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
 	BindShader(gpuShader);
+	//SetShaderLight(*light);
 
 	modelMatrix = Matrix4::Translation({ hSize.x* 0.5f, 225.0f + 60.0f,hSize.z * 0.5f }) * Matrix4::Scale({ 7.0f, 30.0f, 10.0f });
 	textureMatrix.ToIdentity();
@@ -316,7 +317,6 @@ void Renderer::DrawGrass() {
 	glBindTexture(GL_TEXTURE_2D, compVnoise);
 	glUniform1i(glGetUniformLocation(gpuShader->GetProgram(), "diffuseTex"), 0);
 	glUniform1i(glGetUniformLocation(gpuShader->GetProgram(), "useTexture"), 0);
-	glUniform3fv(glGetUniformLocation(gpuShader->GetProgram(), "lightPos"), 1, (float*)&light->GetPosition());
 	glUniform3fv(glGetUniformLocation(compShader->GetProgram(), "mapSize"), 1, (float*)&Vector3(290, 0, 200));
 	glUniform1f(glGetUniformLocation(gpuShader->GetProgram(), "t"), (float)timer->GetTotalTimeSeconds());
 	glUniform1f(glGetUniformLocation(gpuShader->GetProgram(), "windFwdSway"), (float)windFwdSway);

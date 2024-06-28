@@ -5,6 +5,7 @@ uniform int		  useTexture;
 uniform float 	  t;
 uniform vec3      cameraPos;
 
+
 float contrast   = 0.99;
 float saturation = 1.5;
 float brightness = 0.1;
@@ -14,7 +15,6 @@ vec4 AoColor = vec4( 0,0,0,1);
 vec4 topGreen 		= vec4(0.2824, 0.749, 0.2314, 1.0);
 vec4 bottomGreen 	= vec4(0.1294, 0.3294, 0.1059, 1.0);
 
-uniform vec3 lightPos;
 
 layout (binding  = 2, std430) readonly buffer ssbo1 { 
 	vec3 positions[40000];
@@ -24,13 +24,12 @@ layout (binding  = 2, std430) readonly buffer ssbo1 {
 
 in Vertex{
 	vec2 texCoord;
-	vec4 colour;
+	vec3 worldPos;
 	vec3 nWorldPos;
 	vec3 normal;
 } IN;
 
 out vec4 fragColour;
-
 
 mat4 satMatrix( float saturation){
 	vec3 luminance = vec3( 0.3086, 0.6094, 0.0820 );
@@ -69,6 +68,7 @@ mat4 brightnessMatrix( float brightness )
                  brightness, brightness, brightness, 1 );
 }
 
+//////////////////// FLAT COLORIZATION !!! ///////////////////////////////
 vec4 colorize(vec2 uv, vec3 objectPos){
 	
 	vec4 bladeCol 	 = mix(topGreen, bottomGreen, uv.y);
@@ -93,6 +93,9 @@ vec4 colorize(vec2 uv, vec3 objectPos){
 	return finCol;
 }
 
+void Lighting(vec3 objPos){
+	
+}
 
 void main(void) {
 
@@ -100,5 +103,4 @@ void main(void) {
 	vec3 objectPos	= IN.nWorldPos;
 	fragColour = contrastMatrix(contrast) * satMatrix(saturation) * colorize(uv, objectPos);
 	fragColour.rgb = pow(fragColour.rgb, vec3(1.0/gamma));
-
 }

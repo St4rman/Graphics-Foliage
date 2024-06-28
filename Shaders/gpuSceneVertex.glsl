@@ -25,11 +25,13 @@ layout(binding = 2, std430) readonly buffer ssbo1 {
 };
 
 in vec3 position;
+in vec4 colour;
 in vec2 texCoord;
+in vec3 normal;
 
 out Vertex {
 	vec2 texCoord;
-	vec4 colour;
+	vec3 worldPos;
 	vec3 nWorldPos;
 	vec3 normal;
 }OUT;
@@ -49,6 +51,9 @@ mat3 rotMat(float angle, vec3 axis){
 
 void main(void)	{
 	vec3 pos = position;
+
+	mat3 normalMatrix = transpose(inverse(mat3(modelMatrix)));
+	OUT.normal = normalize(normalMatrix * normalize(normal));
 
 	vec3 worldPosCache = vec3(positions[gl_InstanceID].x , 0, positions[gl_InstanceID].z) + pos;
 	float windStrength = texture2D(diffuseTex,(worldPosCache/mapSize).xz).x;
@@ -74,7 +79,7 @@ void main(void)	{
 		worldPosition 	  -= mapSize/2;
 	}
 	
-	gl_Position	  = (projMatrix * viewMatrix * modelMatrix) * vec4(worldPosition, 1.0);
-	OUT.texCoord  = texCoord;
-	OUT.nWorldPos = wPos/ mapSize;
+	gl_Position	  		= (projMatrix * viewMatrix * modelMatrix) * vec4(worldPosition, 1.0);
+	OUT.texCoord  		= texCoord;
+	OUT.nWorldPos 		= wPos/ mapSize;
 }
