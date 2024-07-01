@@ -85,7 +85,6 @@ void MakeNoise(vec2 uv){
     
     vec2 st = uv ;
     vec3 vNoise = voroNoise(uv/1000, 0.05* t);
-    // imageStore(imgOutput, ivec2(st), col);
     imageStore(imgOutput, ivec2(st), vec4(vNoise,1.0));
 }
 
