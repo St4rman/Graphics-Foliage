@@ -64,8 +64,6 @@ void main(void)	{
 		
 	if(pos.y > 0.1f && useTexture == 0){
 
-		vec2 rand = random2(pos.xz);
-
 		vec3 windFwd = mat3(modelMatrix) * vec3(windDir.x, 0, -windDir.y);
 		vec3 windRight = normalize(cross(windFwd, UP));
 

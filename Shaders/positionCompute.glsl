@@ -28,7 +28,7 @@ vec2 rotate(vec2 v, float a) {
 
 vec3 voroNoise(vec2 st, float angleOffset){
 	st += t * windSpeed * normalize(windDir);
-    st *= 6.0;
+    st *= 10.0;
 	
     vec3 color = vec3(0.0, 0.0, 0.0);
 
@@ -62,6 +62,7 @@ vec3 voroNoise(vec2 st, float angleOffset){
 int getArrayFromUV(vec2 uv){
 	return int( scaley.x *gl_WorkGroupSize.x* uv.x) +   int(uv.y);
 }
+
 
 
 void populatePosition(vec2 uv){
