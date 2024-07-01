@@ -62,7 +62,7 @@ void main(void)	{
 	vec3 worldPosCache = vec3(positions[gl_InstanceID].x , 0, positions[gl_InstanceID].z) + pos;
 	float windStrength = texture2D(diffuseTex,(worldPosCache/mapSize).xz).x;
 		
-	if(pos.y > 0.1f){
+	if(pos.y > 0.1f && useTexture == 0){
 
 		vec2 rand = random2(pos.xz);
 

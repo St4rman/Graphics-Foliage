@@ -5,6 +5,10 @@ uniform int		  useTexture;
 uniform float 	  t;
 uniform vec3      cameraPos;
 
+uniform vec4 lightColor;
+uniform vec3 lightPos;
+uniform float lightRadius;
+
 
 float contrast   = 0.99;
 float saturation = 1.5;
@@ -85,17 +89,12 @@ vec4 colorize(vec2 uv, vec3 objectPos){
 		finCol = bladeCol;
 		finCol += vec4(tip);
 		finCol *= aoCol;
-		finCol += color;
-		// finCol = windValue;
+
 	}
 	else {
 		finCol =  texture2D(diffuseTex, uv);
 	}
 	return finCol;
-}
-
-void Lighting(vec3 objPos){
-	
 }
 
 void main(void) {

@@ -314,7 +314,7 @@ void Renderer::DrawGrass() {
 	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
 	BindShader(gpuShader);
-	//SetShaderLight(*light);
+	SetShaderLight(*light);
 
 	modelMatrix = Matrix4::Translation({ hSize.x* 0.5f, 225.0f + 60.0f,hSize.z * 0.5f }) * Matrix4::Scale({ 7.0f, 30.0f, 10.0f });
 	textureMatrix.ToIdentity();
@@ -337,11 +337,11 @@ void Renderer::DrawGrass() {
 	UpdateShaderMatrices();
 	triangle->DrawInstanced(TOTALDISPATCH);
 
-	//modelMatrix = Matrix4::Translation({ 0, 230.0f + 100.0f,0  }) * Matrix4::Scale({100, 100, 100} ) * Matrix4::Rotation(90, {1,0,0});
-	////std::cout << hSize; 
-	//textureMatrix.ToIdentity();
-	//glUniform1i(glGetUniformLocation(gpuShader->GetProgram(), "useTexture"), 1);
-	//UpdateShaderMatrices();
-	//quad->Draw();
+	modelMatrix = Matrix4::Translation({ 0, 230.0f + 100.0f,0  }) * Matrix4::Scale({100, 100, 100} ) * Matrix4::Rotation(90, {1,0,0});
+	//std::cout << hSize; 
+	textureMatrix.ToIdentity();
+	glUniform1i(glGetUniformLocation(gpuShader->GetProgram(), "useTexture"), 1);
+	UpdateShaderMatrices();
+	quad->Draw();
 	
 }
