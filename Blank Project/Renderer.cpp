@@ -1,7 +1,7 @@
 #include "Renderer.h"
 
 Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
-	SCALE = { 20, 20 };
+	SCALE = { 40, 40 };
 	TOTALDISPATCH = SCALE.x * SCALE.y * 10 * 10;
 
 	if (!initShaders())  return;
@@ -26,10 +26,10 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
 
 	timer = parent.GetTimer();
 	
-	windSpeed = 0.06;
+	windSpeed = 0.03;
 	windDir   = { 0,1 };
-	windFwdSway = 100;
-	windRightSway = 0;
+	windFwdSway = 90;
+	windRightSway = 10;
 
 	init = true;
 	
@@ -304,6 +304,7 @@ void Renderer::DrawGrass() {
 	glUniform2fv(glGetUniformLocation(compShader->GetProgram(), "scaley"), 1, (float*)&SCALE);
 	glUniform1f(glGetUniformLocation(compShader->GetProgram(), "windSpeed"), (float)windSpeed);
 	glUniform2fv(glGetUniformLocation(compShader->GetProgram(), "windDir"), 1, (float*)&windDir);
+	glUniform3fv(glGetUniformLocation(compShader->GetProgram(), "cameraPos"), 1, (float*)&camera->GetPosition());
 
 	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
@@ -313,11 +314,12 @@ void Renderer::DrawGrass() {
 	modelMatrix = Matrix4::Translation({ hSize.x* 0.5f, 225.0f + 60.0f,hSize.z * 0.5f }) * Matrix4::Scale({ 7.0f, 30.0f, 10.0f });
 	textureMatrix.ToIdentity();
 
+	Vector3 temp = Vector3(290, 0, 200);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, compVnoise);
 	glUniform1i(glGetUniformLocation(gpuShader->GetProgram(), "diffuseTex"), 0);
 	glUniform1i(glGetUniformLocation(gpuShader->GetProgram(), "useTexture"), 0);
-	glUniform3fv(glGetUniformLocation(compShader->GetProgram(), "mapSize"), 1, (float*)&Vector3(290, 0, 200));
+	glUniform3fv(glGetUniformLocation(gpuShader->GetProgram(), "mapSize"), 1, (float*)&temp);
 	glUniform1f(glGetUniformLocation(gpuShader->GetProgram(), "t"), (float)timer->GetTotalTimeSeconds());
 	glUniform1f(glGetUniformLocation(gpuShader->GetProgram(), "windFwdSway"), (float)windFwdSway);
 	glUniform1f(glGetUniformLocation(gpuShader->GetProgram(), "windRightSway"), (float)windRightSway);

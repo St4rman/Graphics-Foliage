@@ -20,7 +20,7 @@ uniform float t;
 layout(location = 1) uniform vec3 cameraPos;
 
 layout(binding = 2, std430) readonly buffer ssbo1 {
-	vec3 positions[40000];
+	vec3 positions[160000];
 	vec4 color;
 };
 
@@ -35,6 +35,10 @@ out Vertex {
 	vec3 nWorldPos;
 	vec3 normal;
 }OUT;
+
+vec2 random2( vec2 p ) {
+    return fract(sin(vec2(dot(p,vec2(127.1,311.7)),dot(p,vec2(269.5,183.3))))*43758.5453);
+}
 
 //mutliply anything with this mat4 to rotate it to whatever 
 mat3 rotMat(float angle, vec3 axis){
@@ -58,18 +62,17 @@ void main(void)	{
 	vec3 worldPosCache = vec3(positions[gl_InstanceID].x , 0, positions[gl_InstanceID].z) + pos;
 	float windStrength = texture2D(diffuseTex,(worldPosCache/mapSize).xz).x;
 		
-
 	if(pos.y > 0.1f){
+
+		vec2 rand = random2(pos.xz);
 
 		vec3 windFwd = mat3(modelMatrix) * vec3(windDir.x, 0, -windDir.y);
 		vec3 windRight = normalize(cross(windFwd, UP));
 
-		float x =  radians(windRightSway) * windStrength;
-		float z = radians(windFwdSway) * windStrength;
+		float x =  radians(windRightSway) * sin(t)* windStrength;
+		float z = radians(windFwdSway)  * windStrength;
 		//flipping this here because for some reasion these are flipped
 		pos = rotMat(z, windRight) *rotMat(x, windFwd) * pos;
-	
-
 	}
 	
 	//this is the final postion. Any changes to individual blades should be done above
