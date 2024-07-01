@@ -140,7 +140,7 @@ bool Renderer::initMeshes(){
 	triangle	= Mesh::GenerateTriangle();
 	triangle->GenerateNormals();
 	triangle->GenerateTangents();
-	heightMap	= new HeightMap(TEXTUREDIR"white.jpg", { 5.0f, 1.0f, 5.0f });
+	heightMap	= new HeightMap(TEXTUREDIR"noise2.jpg", { 5.0f, 1.0f, 5.0f });
 	grassMesh	= Mesh::LoadFromMeshFile("GrassVert.msh");
 
 	return heightMap->loadSuccess();
@@ -175,7 +175,10 @@ void Renderer::UpdateScene(float dt) {
 
 
 	if (Window::GetKeyboard()->KeyDown(KEYBOARD_0)) {
-		std::cout << "camera :: " << camera->GetPosition();
+		std::cout << "vert len " << heightMap->GetVerticalOffset().size();
+		/*for (auto x : heightMap->GetVerticalOffset()) {
+			std::cout << x;
+		}*/
 	}
 }
 
@@ -337,7 +340,7 @@ void Renderer::DrawGrass() {
 	triangle->DrawInstanced(TOTALDISPATCH);
 
 	modelMatrix = Matrix4::Translation({ 0, 230.0f + 100.0f,0  }) * Matrix4::Scale({100, 100, 100} ) * Matrix4::Rotation(90, {1,0,0});
-	//std::cout << hSize; 
+
 	textureMatrix.ToIdentity();
 	glUniform1i(glGetUniformLocation(gpuShader->GetProgram(), "useTexture"), 1);
 	UpdateShaderMatrices();
