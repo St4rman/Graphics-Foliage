@@ -8,9 +8,10 @@ uniform vec3 mapSize;
 uniform vec2 scaley;
 uniform float windSpeed;
 uniform vec2 windDir;
+uniform vec3 camPos;
 
 layout(binding = 2, std430) buffer ssbo1 {
-	vec3 positions[40000];
+	vec3 positions[160000];
 	vec4 color;
 };
 
@@ -27,7 +28,7 @@ vec2 rotate(vec2 v, float a) {
 
 vec3 voroNoise(vec2 st, float angleOffset){
 	st += t * windSpeed * normalize(windDir);
-    st *= 6.0;
+    st *= 10.0;
 	
     vec3 color = vec3(0.0, 0.0, 0.0);
 
@@ -62,9 +63,7 @@ int getArrayFromUV(vec2 uv){
 	return int( scaley.x *gl_WorkGroupSize.x* uv.x) +   int(uv.y);
 }
 
-void calcChunk(vec3 uv){
-	
-}
+
 
 void populatePosition(vec2 uv){
 
@@ -75,7 +74,6 @@ void populatePosition(vec2 uv){
   
 	tempWorldPos.xz += random2(uv) *mapSize.xz/float(scaley.x * gl_WorkGroupSize.x );
 	positions[getArrayFromUV(uv)] = tempWorldPos;	
-	
 }
 
 
@@ -87,7 +85,6 @@ void MakeNoise(vec2 uv){
     
     vec2 st = uv ;
     vec3 vNoise = voroNoise(uv/1000, 0.05* t);
-    // imageStore(imgOutput, ivec2(st), col);
     imageStore(imgOutput, ivec2(st), vec4(vNoise,1.0));
 }
 
@@ -95,13 +92,6 @@ void main(){
 	
  	ivec2 uv = ivec2(gl_GlobalInvocationID.xy);
 	populatePosition(uv);
-	calcChunk(gl_WorkGroupID);
+	// calcChunk(gl_WorkGroupID);
     MakeNoise(uv);
-
-	// ivec2 st = ivec2(uv.xy)/ ivec2(gl_NumWorkGroups);
-	// vec3 col = 0.5 + 0.5*cos(0.+st.xxx +vec3(0,2,4));
-
-    
-	// vec3 vnoise = voroNoise(uv/1000.0, 0.05 * t);
-	// imageStore(imgOutput, uv, vec4(vnoise, 1.0));
 }
