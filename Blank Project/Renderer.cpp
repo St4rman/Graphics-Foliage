@@ -31,6 +31,7 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
 	windFwdSway = 90;
 	windRightSway = 10;
 
+	grassDimensions = { 7, 30, 10 };
 	init = true;
 	
 }
@@ -119,6 +120,16 @@ bool Renderer::initComputeShaders() {
 	glNamedBufferStorage(ssboID, 3 * TOTALDISPATCH * sizeof(GLfloat) * 4 * sizeof(GLfloat), 0, GL_DYNAMIC_STORAGE_BIT);
 
 
+	if (!heightMap->loadSuccess()) return false;
+	
+
+	std::vector<float> temp = heightMap->GetVerticalOffset();
+	std::reverse(temp.begin(), temp.end());
+	glCreateBuffers(1, &heightBuffer);
+	glNamedBufferStorage(heightBuffer, temp.size() * sizeof(GLfloat),reinterpret_cast<GLfloat*>(temp.data()), GL_DYNAMIC_STORAGE_BIT);
+
+
+
 	glGenTextures(1, &compVnoise);
 	glActiveTexture(GL_TEXTURE0);
 	glActiveTexture(GL_TEXTURE0);
@@ -140,7 +151,7 @@ bool Renderer::initMeshes(){
 	triangle	= Mesh::GenerateTriangle();
 	triangle->GenerateNormals();
 	triangle->GenerateTangents();
-	heightMap	= new HeightMap(TEXTUREDIR"noise2.jpg", { 5.0f, 1.0f, 5.0f });
+	heightMap	= new HeightMap(TEXTUREDIR"noise2.jpg", { 5.0f, 3.0f, 5.0f });
 	grassMesh	= Mesh::LoadFromMeshFile("GrassVert.msh");
 
 	return heightMap->loadSuccess();
@@ -148,10 +159,13 @@ bool Renderer::initMeshes(){
 }
 
 bool Renderer::initSceneNodes() {
-	root = new SceneNode();
-	root->SetTransform(Matrix4::Translation(localOrigin));
+	root = new SceneNode(Mesh::LoadFromMeshFile("OffsetCubeY.msh"));
+	root->SetTransform(Matrix4::Translation({ 0,
+		0,
+		0 }));
+	root->SetModelScale(Vector3(100, 100, 100));
 
-	for (int i = 0; i < 5; ++i) {
+	/*for (int i = 0; i < 5; ++i) {
 		SceneNode* s = new SceneNode();
 		s->SetColour(Vector4(1.0f, 1.0f, 1.0f, 0.5f));
 		s->SetTransform(Matrix4::Translation(
@@ -161,7 +175,7 @@ bool Renderer::initSceneNodes() {
 		s->SetMesh(quad);
 		s->SetTexture(earthTex);
 		root->AddChild(s);
-	}
+	}*/
 	return true;
 }
 
@@ -175,10 +189,7 @@ void Renderer::UpdateScene(float dt) {
 
 
 	if (Window::GetKeyboard()->KeyDown(KEYBOARD_0)) {
-		std::cout << "vert len " << heightMap->GetVerticalOffset().size();
-		/*for (auto x : heightMap->GetVerticalOffset()) {
-			std::cout << x;
-		}*/
+		std::cout << camera->GetPosition();
 	}
 }
 
@@ -255,7 +266,7 @@ void Renderer::RenderScene() {
 
 	DrawSkybox();
 	DrawHeightMap();
-	//DrawSceneNodeItems();
+	DrawSceneNodeItems();
 	DrawGrass();
 	
 }
@@ -285,8 +296,10 @@ void Renderer::DrawHeightMap() {
 	glUniform1i(glGetUniformLocation(lightShader->GetProgram(), "bumpTex"), 1);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, earthBump);
-
+	Vector3 hSize = heightMap->GetHeightmapSize();
+	
 	modelMatrix.ToIdentity();
+	modelMatrix = Matrix4::Translation({ 0, 0, hSize.z })* Matrix4::Rotation(90, { 0,1,0 }) ;
 	textureMatrix.ToIdentity();
 
 	UpdateShaderMatrices();
@@ -299,6 +312,7 @@ void Renderer::DrawGrass() {
 
 	Vector3 hSize = heightMap->GetHeightmapSize();
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, ssboID);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, heightBuffer);
 
 	compShader->Bind();
 	compShader->Dispatch((unsigned int)SCALE.x, (unsigned int)SCALE.y, 1);
@@ -318,7 +332,7 @@ void Renderer::DrawGrass() {
 	BindShader(gpuShader);
 	SetShaderLight(*light);
 
-	modelMatrix = Matrix4::Translation({ hSize.x* 0.5f, 225.0f + 60.0f,hSize.z * 0.5f }) * Matrix4::Scale({ 7.0f, 30.0f, 10.0f });
+	modelMatrix = Matrix4::Translation({ hSize.x * 1.5f , 0 , 0.5f*hSize.z }) * Matrix4::Scale(grassDimensions);
 	textureMatrix.ToIdentity();
 
 	Vector3 temp = Vector3(290, 0, 200);
@@ -332,6 +346,7 @@ void Renderer::DrawGrass() {
 	glUniform1f(glGetUniformLocation(gpuShader->GetProgram(), "windRightSway"), (float)windRightSway);
 	glUniform2fv(glGetUniformLocation(gpuShader->GetProgram(), "windDir"), 1, (float*)&windDir);
 	glUniform3fv(glGetUniformLocation(gpuShader->GetProgram(), "cameraPos"), 1, (float*)&camera->GetPosition());
+	glUniform1f(glGetUniformLocation(gpuShader->GetProgram(), "grassHeight"), grassDimensions.y);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

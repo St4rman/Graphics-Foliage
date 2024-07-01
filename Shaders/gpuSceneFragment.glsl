@@ -25,6 +25,10 @@ layout (binding  = 2, std430) readonly buffer ssbo1 {
 	vec4 color;
 };
 
+layout(binding = 3, std430) buffer heightBuffer{
+    float yPos[160000];
+};
+
 
 in Vertex{
 	vec2 texCoord;

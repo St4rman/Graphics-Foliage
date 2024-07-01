@@ -15,6 +15,10 @@ layout(binding = 2, std430) buffer ssbo1 {
 	vec4 color;
 };
 
+layout(binding = 3, std430) buffer heightBuffer{
+    float yPos[160000];
+};
+
 vec2 random2( vec2 p ) {
     return fract(sin(vec2(dot(p,vec2(127.1,311.7)),dot(p,vec2(269.5,183.3))))*43758.5453);
 }
@@ -70,7 +74,6 @@ void populatePosition(vec2 uv){
 	vec3 tempWorldPos;
 	tempWorldPos.x =  uv.x *  mapSize.x/float( scaley.x * gl_WorkGroupSize.x );
 	tempWorldPos.z =  uv.y *  mapSize.z/float( scaley.y * gl_WorkGroupSize.y );
-
   
 	tempWorldPos.xz += random2(uv) *mapSize.xz/float(scaley.x * gl_WorkGroupSize.x );
 	positions[getArrayFromUV(uv)] = tempWorldPos;	

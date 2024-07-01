@@ -15,6 +15,7 @@ uniform vec2 		windDir;
 
 uniform float windFwdSway;
 uniform float windRightSway;
+uniform float grassHeight;
 
 uniform float t;
 layout(location = 1) uniform vec3 cameraPos;
@@ -22,6 +23,10 @@ layout(location = 1) uniform vec3 cameraPos;
 layout(binding = 2, std430) readonly buffer ssbo1 {
 	vec3 positions[160000];
 	vec4 color;
+};
+
+layout(binding = 3, std430) buffer heightBuffer{
+    float yPos[160000];
 };
 
 in vec3 position;
@@ -55,13 +60,13 @@ mat3 rotMat(float angle, vec3 axis){
 
 void main(void)	{
 	vec3 pos = position;
-
+	
 	mat3 normalMatrix = transpose(inverse(mat3(modelMatrix)));
 	OUT.normal = normalize(normalMatrix * normalize(normal));
 
 	vec3 worldPosCache = vec3(positions[gl_InstanceID].x , 0, positions[gl_InstanceID].z) + pos;
 	float windStrength = texture2D(diffuseTex,(worldPosCache/mapSize).xz).x;
-		
+
 	if(pos.y > 0.1f && useTexture == 0){
 
 		vec3 windFwd = mat3(modelMatrix) * vec3(windDir.x, 0, -windDir.y);
@@ -74,7 +79,9 @@ void main(void)	{
 	}
 	
 	//this is the final postion. Any changes to individual blades should be done above
-	vec3 worldPosition = vec3(positions[gl_InstanceID].x , 0, positions[gl_InstanceID].z) + pos;
+	vec3 worldPosition = vec3(positions[gl_InstanceID].x , (yPos[gl_InstanceID] /grassHeight) + 1.0, positions[gl_InstanceID].z) + pos;
+	worldPosition.x *= -1.0f;
+	
 	vec3 wPos = worldPosition;
 	if(useTexture == 0){
 		worldPosition 	  -= mapSize/2;
