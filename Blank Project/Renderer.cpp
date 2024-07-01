@@ -173,6 +173,11 @@ void Renderer::UpdateScene(float dt) {
 	frameFrustum.FromMatrix(projMatrix * viewMatrix);
 
 	root->Update(dt);
+
+
+	if (Window::GetKeyboard()->KeyDown(KEYBOARD_0)) {
+		std::cout << "camera :: " << camera->GetPosition();
+	}
 }
 
 void Renderer::BuildNodeLists(SceneNode* from) {

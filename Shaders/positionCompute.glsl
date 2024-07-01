@@ -63,11 +63,6 @@ int getArrayFromUV(vec2 uv){
 	return int( scaley.x *gl_WorkGroupSize.x* uv.x) +   int(uv.y);
 }
 
-void calcChunk(vec3 worldPos){
-	if(distance(camPos, worldPos) > 0.5){
-        color = vec4(1,0,1,1);
-    }
-}
 
 void populatePosition(vec2 uv){
 
@@ -78,7 +73,6 @@ void populatePosition(vec2 uv){
   
 	tempWorldPos.xz += random2(uv) *mapSize.xz/float(scaley.x * gl_WorkGroupSize.x );
 	positions[getArrayFromUV(uv)] = tempWorldPos;	
-	calcChunk(tempWorldPos);
 }
 
 
