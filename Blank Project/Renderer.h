@@ -87,11 +87,12 @@ protected:
 	GLuint compVnoise	= 0;
 
 	GLuint ssboID	=0;
-	GLuint ssboGB = 0;
+	GLuint heightBuffer = 0;
 
 	float windSpeed;
 	float windFwdSway;
 	float windRightSway;
 	Vector2 windDir;
+	Vector3 grassDimensions;
 };
 

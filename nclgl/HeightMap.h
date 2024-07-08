@@ -10,8 +10,10 @@ public:
 
 	Vector3 GetHeightmapSize() const { return heightmapSize; }
 	bool    loadSuccess()      const { return init; }
+	std::vector<float>& GetVerticalOffset() { return vertOffset; }
 protected:
 	Vector3 heightmapSize;
 	bool	init;
+	std::vector<float> vertOffset;
 };
 
