@@ -91,7 +91,7 @@ vec4 colorize(vec2 uv, vec3 objectPos){
 	if(useTexture == 0){
 		
 		finCol = bladeCol;
-		finCol += vec4(tip);
+		finCol += vec4(tip.rgb * 0.5, 1.0);
 		finCol *= aoCol;
 
 	}
@@ -105,6 +105,6 @@ void main(void) {
 
 	vec2 uv 		= IN.texCoord;
 	vec3 objectPos	= IN.nWorldPos;
-	fragColour = contrastMatrix(contrast) * satMatrix(saturation) * colorize(uv, objectPos);
-	fragColour.rgb = pow(fragColour.rgb, vec3(1.0/gamma));
+	fragColour 		= contrastMatrix(contrast) * satMatrix(saturation) * colorize(uv, objectPos);
+	fragColour.rgb  = pow(fragColour.rgb, vec3(1.0/gamma));
 }

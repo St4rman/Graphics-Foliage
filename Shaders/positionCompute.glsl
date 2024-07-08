@@ -35,7 +35,7 @@ vec2 rotate(vec2 v, float a) {
 
 vec3 voroNoise(vec2 st, float angleOffset){
 	st += t * windSpeed * normalize(windDir);
-    st *= 10.0;
+    st *= 15.0;
 	
     vec3 color = vec3(0.0, 0.0, 0.0);
 
@@ -87,7 +87,7 @@ void MakeNoise(vec2 uv){
 
 	vec4 col = vec4(1,1,0,1);
     col.x =  float(uv.x)/(gl_NumWorkGroups.x * gl_WorkGroupSize.x);
-    col.y =  float(uv.x)/(gl_NumWorkGroups.x * gl_WorkGroupSize.x);
+    col.y =  float(uv.x)/(gl_NumWorkGroups.y * gl_WorkGroupSize.y);
     
     vec2 st = uv ;
     vec3 vNoise = voroNoise(uv/1000, 0.05* t);
@@ -99,6 +99,5 @@ void main(){
  	ivec2 uv = ivec2(gl_GlobalInvocationID.xy);
     grassDimensions = vec4(grassDims, 0.0);
 	populatePosition(uv);
-	// calcChunk(gl_WorkGroupID);
     MakeNoise(uv);
 }

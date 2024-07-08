@@ -80,7 +80,7 @@ void main(void)	{
 	}
 	
 	//this is the final postion. Any changes to individual blades should be done above
-	vec3 worldPosition = vec3(positions[gl_InstanceID].x , (yPos[gl_InstanceID] /grassDimensions.y) + 1.0, positions[gl_InstanceID].z) + pos;
+	vec3 worldPosition = vec3(positions[gl_InstanceID].x , (yPos[gl_InstanceID] /grassDimensions.y) +1.9f, positions[gl_InstanceID].z) + pos;
 	worldPosition.x *= -1.0f;
 	
 	vec3 wPos = worldPosition;

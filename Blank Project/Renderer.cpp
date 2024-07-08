@@ -12,7 +12,7 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
 	
 	Vector3 heightmapSize = heightMap->GetHeightmapSize();
 
-	camera = new Camera(-45.0f, 0.0f, heightmapSize * Vector3(0.5f, 5.0f, 0.5f));
+	camera = new Camera(-45.0f, 0.0f, heightmapSize * Vector3(0.5f, 2.0f, 0.5f));
 	light = new Light(heightmapSize * Vector3(0.5f, 10.0, 0.5f), Vector4(1, 1, 1, 1), 10000);
 
 	localOrigin = heightmapSize * Vector3(0.5f, 5.0f, 0.5f);
@@ -27,11 +27,11 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
 	timer = parent.GetTimer();
 	
 	windSpeed = 0.02;
-	windDir   = { 1,1 };
+	windDir   = { 1,0 };
 	windFwdSway = 90;
 	windRightSway = 10;
 
-	grassDimensions = { 3, 15, 3 };
+	grassDimensions = { 5, 20, 5 };
 	init = true;
 	
 }
@@ -338,7 +338,7 @@ void Renderer::DrawGrass() {
 	textureMatrix.ToIdentity();
 
 	Vector3 temp = hSize/grassDimensions;
-	temp.y = 0;
+	temp.y = 1.0f;
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, compVnoise);
 	glUniform1i(glGetUniformLocation(gpuShader->GetProgram(), "diffuseTex"), 0);
