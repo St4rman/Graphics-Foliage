@@ -15,7 +15,7 @@ uniform vec3 camPos;
 
 layout(binding = 2, std430) buffer ssbo1 {
 	vec3 positions[160000];
-	vec4 color;
+	vec4 grassDimensions;
 };
 
 layout(binding = 3, std430) buffer heightBuffer{
@@ -97,6 +97,7 @@ void MakeNoise(vec2 uv){
 void main(){
 	
  	ivec2 uv = ivec2(gl_GlobalInvocationID.xy);
+    grassDimensions = vec4(grassDims, 0.0);
 	populatePosition(uv);
 	// calcChunk(gl_WorkGroupID);
     MakeNoise(uv);

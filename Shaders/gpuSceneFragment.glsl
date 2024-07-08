@@ -22,7 +22,7 @@ vec4 bottomGreen 	= vec4(0.1294, 0.3294, 0.1059, 1.0);
 
 layout (binding  = 2, std430) readonly buffer ssbo1 { 
 	vec3 positions[160000];
-	vec4 color;
+	vec4 grassDimensions;
 };
 
 layout(binding = 3, std430) buffer heightBuffer{

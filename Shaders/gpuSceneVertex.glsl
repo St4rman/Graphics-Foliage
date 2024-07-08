@@ -8,21 +8,22 @@ uniform mat4 		modelMatrix;
 uniform mat4 		viewMatrix;
 uniform mat4 		projMatrix;
 uniform vec4 		nodeColor;
+
 uniform int		  	useTexture;
 uniform sampler2D 	diffuseTex;
-uniform vec3		mapSize;
+uniform vec3		spacePerBlade;
+
 uniform vec2 		windDir;
 
 uniform float windFwdSway;
 uniform float windRightSway;
-uniform float grassHeight;
 
 uniform float t;
 layout(location = 1) uniform vec3 cameraPos;
 
 layout(binding = 2, std430) readonly buffer ssbo1 {
 	vec3 positions[160000];
-	vec4 color;
+	vec4 grassDimensions;
 };
 
 layout(binding = 3, std430) buffer heightBuffer{
@@ -65,7 +66,7 @@ void main(void)	{
 	OUT.normal = normalize(normalMatrix * normalize(normal));
 
 	vec3 worldPosCache = vec3(positions[gl_InstanceID].x , 0, positions[gl_InstanceID].z) + pos;
-	float windStrength = texture2D(diffuseTex,(worldPosCache/mapSize).xz).x;
+	float windStrength = texture2D(diffuseTex,(worldPosCache/spacePerBlade).xz).x;
 
 	if(pos.y > 0.1f && useTexture == 0){
 
@@ -79,15 +80,15 @@ void main(void)	{
 	}
 	
 	//this is the final postion. Any changes to individual blades should be done above
-	vec3 worldPosition = vec3(positions[gl_InstanceID].x , (yPos[gl_InstanceID] /grassHeight) + 1.0, positions[gl_InstanceID].z) + pos;
+	vec3 worldPosition = vec3(positions[gl_InstanceID].x , (yPos[gl_InstanceID] /grassDimensions.y) + 1.0, positions[gl_InstanceID].z) + pos;
 	worldPosition.x *= -1.0f;
 	
 	vec3 wPos = worldPosition;
 	if(useTexture == 0){
-		worldPosition 	  -= mapSize/2;
+		worldPosition 	  -= spacePerBlade/2;
 	}
 	
 	gl_Position	  		= (projMatrix * viewMatrix * modelMatrix) * vec4(worldPosition, 1.0);
 	OUT.texCoord  		= texCoord;
-	OUT.nWorldPos 		= wPos/ mapSize;
+	OUT.nWorldPos 		= wPos/ spacePerBlade;
 }
