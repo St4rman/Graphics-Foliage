@@ -320,12 +320,14 @@ void Renderer::DrawGrass() {
 
 	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
-	glUniform3fv(glGetUniformLocation(compShader->GetProgram(), "mapSize"), 1, (float*)&Vector3(290, 0, 200));
+	glUniform3fv(glGetUniformLocation(compShader->GetProgram(), "mapSize"), 1, (float*)&hSize);
 	glUniform1f(glGetUniformLocation(compShader->GetProgram(), "t"), (float)timer->GetTotalTimeSeconds());
-	glUniform2fv(glGetUniformLocation(compShader->GetProgram(), "scaley"), 1, (float*)&SCALE);
+	glUniform2fv(glGetUniformLocation(compShader->GetProgram(), "density"), 1, (float*)&SCALE);
 	glUniform1f(glGetUniformLocation(compShader->GetProgram(), "windSpeed"), (float)windSpeed);
 	glUniform2fv(glGetUniformLocation(compShader->GetProgram(), "windDir"), 1, (float*)&windDir);
 	glUniform3fv(glGetUniformLocation(compShader->GetProgram(), "cameraPos"), 1, (float*)&camera->GetPosition());
+	glUniform3fv(glGetUniformLocation(compShader->GetProgram(), "grassDims"), 1, (float*)&grassDimensions);
+
 
 	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 

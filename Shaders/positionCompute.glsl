@@ -5,9 +5,12 @@ layout(rgba32f, binding = 0) uniform image2D imgOutput;
 layout(location = 0) uniform float t;
 
 uniform vec3 mapSize;
-uniform vec2 scaley;
+uniform vec2 density;
+uniform vec3 grassDims;
+
 uniform float windSpeed;
 uniform vec2 windDir;
+
 uniform vec3 camPos;
 
 layout(binding = 2, std430) buffer ssbo1 {
@@ -64,7 +67,7 @@ vec3 voroNoise(vec2 st, float angleOffset){
 
 //CONDITIONAL BOTH SCALES SHOULD BE EQUAL FOR THIS TO WORK 
 int getArrayFromUV(vec2 uv){
-	return int( scaley.x *gl_WorkGroupSize.x* uv.x) +   int(uv.y);
+	return int( density.x *gl_WorkGroupSize.x* uv.x) +   int(uv.y);
 }
 
 
@@ -72,10 +75,10 @@ int getArrayFromUV(vec2 uv){
 void populatePosition(vec2 uv){
 
 	vec3 tempWorldPos;
-	tempWorldPos.x =  uv.x *  mapSize.x/float( scaley.x * gl_WorkGroupSize.x );
-	tempWorldPos.z =  uv.y *  mapSize.z/float( scaley.y * gl_WorkGroupSize.y );
+	tempWorldPos.x =  uv.x *  float(mapSize.x / grassDims.x)/float( density.x * gl_WorkGroupSize.x );
+	tempWorldPos.z =  uv.y *  float(mapSize.z / grassDims.z)/float( density.y * gl_WorkGroupSize.y );
   
-	tempWorldPos.xz += random2(uv) *mapSize.xz/float(scaley.x * gl_WorkGroupSize.x );
+	tempWorldPos.xz += random2(uv) *mapSize.xz/float(density.x * gl_WorkGroupSize.x );
 	positions[getArrayFromUV(uv)] = tempWorldPos;	
 }
 
