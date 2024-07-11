@@ -80,14 +80,11 @@ mat4 brightnessMatrix( float brightness )
 }
 
 vec4 addWind( vec2 uv ){
-	// uv = uv/10.0f;
+
+	// uv = uv/5.0f;
 	float windTime = time * 0.02 * 10.0f;
 	uv  += windTime * vec2(-windDir.x, windDir.y);
 	return (texture2D(windTex, uv));
-}
-
-
-vec4 heightBlend(){
 	
 }
 
@@ -106,7 +103,9 @@ vec4 colorize(vec2 uv, vec3 objectPos){
 	finCol += vec4(tip.rgb * 0.5, 1.0);
 	finCol *= aoCol;
 
-	finCol += satMatrix(0.3) * addWind(objectPos.xz);
+	// finCol = mix(finCol, vec4(1, 1.0, 0.0, 1.0) , heightBlend(objectPos));
+	vec4 wc = addWind(objectPos.xz);
+	finCol += wc * 0.1f;
 
 	return finCol;
 }
