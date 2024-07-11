@@ -1,19 +1,24 @@
 #version 430 core
 
 uniform sampler2D diffuseTex;
+uniform sampler2D windTex;
+
 uniform int		  useTexture;
-uniform float 	  t;
+uniform float 	  time;
 uniform vec3      cameraPos;
 
 uniform vec4 lightColor;
 uniform vec3 lightPos;
 uniform float lightRadius;
 
+uniform vec2 		windDir;
 
 float contrast   = 0.99;
 float saturation = 1.5;
 float brightness = 0.1;
 float gamma      = 2.2;
+
+float heightBlendFactor = 10.0;
 
 vec4 AoColor 		= vec4( 0,0,0,1);
 vec4 topGreen 		= vec4(0.2824, 0.749, 0.2314, 1.0);
@@ -22,7 +27,7 @@ vec4 bottomGreen 	= vec4(0.1294, 0.3294, 0.1059, 1.0);
 
 layout (binding  = 2, std430) readonly buffer ssbo1 { 
 	vec3 positions[160000];
-	vec4 color;
+	vec4 grassDimensions;
 };
 
 layout(binding = 3, std430) buffer heightBuffer{
@@ -76,6 +81,22 @@ mat4 brightnessMatrix( float brightness )
                  brightness, brightness, brightness, 1 );
 }
 
+vec4 addWind( vec2 uv ){
+
+	// uv = uv/5.0f;
+	float windTime = time * 0.02 * 10.0f;
+	uv  += windTime * vec2(-windDir.x, windDir.y);
+	return (texture2D(windTex, uv));
+	
+}
+
+float heightBlend(float yPosition){
+
+	//heigthmap y scale is 3.0
+	float tempY = (yPosition - 1.9f)/ 3.0f;
+	return smoothstep(0.0f, heightBlendFactor, tempY );
+}
+
 //////////////////// FLAT COLORIZATION !!! ///////////////////////////////
 vec4 colorize(vec2 uv, vec3 objectPos){
 	
@@ -87,24 +108,32 @@ vec4 colorize(vec2 uv, vec3 objectPos){
 	tip 			= mix(vec4(0.0), tip, uv.y - 0.5);
 
 	vec4 finCol;
+	finCol = bladeCol;
+	finCol += vec4(tip.rgb * 0.5, 1.0);
+	finCol *= aoCol;
 
-	if(useTexture == 0){
-		
-		finCol = bladeCol;
-		finCol += vec4(tip);
-		finCol *= aoCol;
+	finCol +=vec4(1.0, 0.5686, 0.0, 1.0) * heightBlend(objectPos.y);
 
-	}
-	else {
-		finCol =  texture2D(diffuseTex, uv);
-	}
+	vec4 wc = addWind(objectPos.xz);
+	wc = clamp (wc, 0.0, 1.0);
+	vec3 wct = mix(vec3(0.0), wc.xyz, heightBlend(objectPos.y));
+	finCol.xyz += mix(fragColour.xyz, wct, uv.y);
 	return finCol;
 }
+
 
 void main(void) {
 
 	vec2 uv 		= IN.texCoord;
 	vec3 objectPos	= IN.nWorldPos;
-	fragColour = contrastMatrix(contrast) * satMatrix(saturation) * colorize(uv, objectPos);
-	fragColour.rgb = pow(fragColour.rgb, vec3(1.0/gamma));
+
+	if(useTexture == 0){
+
+		fragColour 		= contrastMatrix(contrast) * satMatrix(saturation) * colorize(uv, objectPos);
+		fragColour.rgb  = pow(fragColour.rgb, vec3(1.0/gamma));
+
+	}else {
+		fragColour = texture2D(diffuseTex, uv);
+	}
+	
 }

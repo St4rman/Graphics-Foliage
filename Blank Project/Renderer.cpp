@@ -12,7 +12,7 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
 	
 	Vector3 heightmapSize = heightMap->GetHeightmapSize();
 
-	camera = new Camera(-45.0f, 0.0f, heightmapSize * Vector3(0.5f, 5.0f, 0.5f));
+	camera = new Camera(-45.0f, 0.0f, heightmapSize * Vector3(0.5f, 2.0f, 0.5f));
 	light = new Light(heightmapSize * Vector3(0.5f, 10.0, 0.5f), Vector4(1, 1, 1, 1), 10000);
 
 	localOrigin = heightmapSize * Vector3(0.5f, 5.0f, 0.5f);
@@ -26,12 +26,12 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
 
 	timer = parent.GetTimer();
 	
-	windSpeed = 0.03;
-	windDir   = { 0,1 };
+	windSpeed = 0.02;
+	windDir   = { 0 , 1 };
 	windFwdSway = 90;
 	windRightSway = 10;
 
-	grassDimensions = { 7, 30, 10 };
+	grassDimensions = { 5, 20, 5 };
 	init = true;
 	
 }
@@ -76,6 +76,8 @@ bool Renderer::initTextures() {
 	earthBump = SOIL_load_OGL_texture(TEXTUREDIR"base_grassN.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
 	debugTex = SOIL_load_OGL_texture(TEXTUREDIR"test.jpg", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
 	grassTex = SOIL_load_OGL_texture(TEXTUREDIR"grassbush.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+	windTex  = SOIL_load_OGL_texture(TEXTUREDIR"wind-bump.jpg", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+
 
 	cubeMap = SOIL_load_OGL_cubemap(
 		TEXTUREDIR"left.png", TEXTUREDIR"right.png",
@@ -83,7 +85,7 @@ bool Renderer::initTextures() {
 		TEXTUREDIR"front.png", TEXTUREDIR"back.png",
 		SOIL_LOAD_RGB, SOIL_CREATE_NEW_ID, 0);
 
-	if (!earthTex || !earthBump || !cubeMap || !grassTex || !debugTex) {
+	if (!earthTex || !earthBump || !cubeMap || !grassTex || !debugTex || !windTex) {
 		return false;
 	}
 
@@ -320,12 +322,14 @@ void Renderer::DrawGrass() {
 
 	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
-	glUniform3fv(glGetUniformLocation(compShader->GetProgram(), "mapSize"), 1, (float*)&Vector3(290, 0, 200));
+	glUniform3fv(glGetUniformLocation(compShader->GetProgram(), "mapSize"), 1, (float*)&hSize);
 	glUniform1f(glGetUniformLocation(compShader->GetProgram(), "t"), (float)timer->GetTotalTimeSeconds());
-	glUniform2fv(glGetUniformLocation(compShader->GetProgram(), "scaley"), 1, (float*)&SCALE);
+	glUniform2fv(glGetUniformLocation(compShader->GetProgram(), "density"), 1, (float*)&SCALE);
 	glUniform1f(glGetUniformLocation(compShader->GetProgram(), "windSpeed"), (float)windSpeed);
 	glUniform2fv(glGetUniformLocation(compShader->GetProgram(), "windDir"), 1, (float*)&windDir);
 	glUniform3fv(glGetUniformLocation(compShader->GetProgram(), "cameraPos"), 1, (float*)&camera->GetPosition());
+	glUniform3fv(glGetUniformLocation(compShader->GetProgram(), "grassDims"), 1, (float*)&grassDimensions);
+
 
 	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
@@ -335,18 +339,30 @@ void Renderer::DrawGrass() {
 	modelMatrix = Matrix4::Translation({ hSize.x * 1.5f , 0 , 0.5f*hSize.z }) * Matrix4::Scale(grassDimensions);
 	textureMatrix.ToIdentity();
 
-	Vector3 temp = Vector3(290, 0, 200);
+	Vector3 temp = hSize/grassDimensions;
+	temp.y = 1.0f;
+	
+	glUniform1i(glGetUniformLocation(gpuShader->GetProgram(), "diffuseTex"), 0);
+	glUniform1i(glGetUniformLocation(gpuShader->GetProgram(), "windTex"),	 1);
+
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, compVnoise);
-	glUniform1i(glGetUniformLocation(gpuShader->GetProgram(), "diffuseTex"), 0);
+
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, windTex);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	
+
 	glUniform1i(glGetUniformLocation(gpuShader->GetProgram(), "useTexture"), 0);
-	glUniform3fv(glGetUniformLocation(gpuShader->GetProgram(), "mapSize"), 1, (float*)&temp);
-	glUniform1f(glGetUniformLocation(gpuShader->GetProgram(), "t"), (float)timer->GetTotalTimeSeconds());
+
+
+	glUniform3fv(glGetUniformLocation(gpuShader->GetProgram(), "spacePerBlade"), 1, (float*)&temp);
+	glUniform1f(glGetUniformLocation(gpuShader->GetProgram(), "time"), (float)timer->GetTotalTimeSeconds());
 	glUniform1f(glGetUniformLocation(gpuShader->GetProgram(), "windFwdSway"), (float)windFwdSway);
 	glUniform1f(glGetUniformLocation(gpuShader->GetProgram(), "windRightSway"), (float)windRightSway);
 	glUniform2fv(glGetUniformLocation(gpuShader->GetProgram(), "windDir"), 1, (float*)&windDir);
 	glUniform3fv(glGetUniformLocation(gpuShader->GetProgram(), "cameraPos"), 1, (float*)&camera->GetPosition());
-	glUniform1f(glGetUniformLocation(gpuShader->GetProgram(), "grassHeight"), grassDimensions.y);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

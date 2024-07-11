@@ -85,6 +85,7 @@ protected:
 	GLuint earthBump	= 0;
 	GLuint grassTex		= 0;
 	GLuint compVnoise	= 0;
+	GLuint windTex		= 0;
 
 	GLuint ssboID	=0;
 	GLuint heightBuffer = 0;

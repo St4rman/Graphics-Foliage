@@ -5,14 +5,17 @@ layout(rgba32f, binding = 0) uniform image2D imgOutput;
 layout(location = 0) uniform float t;
 
 uniform vec3 mapSize;
-uniform vec2 scaley;
+uniform vec2 density;
+uniform vec3 grassDims;
+
 uniform float windSpeed;
 uniform vec2 windDir;
+
 uniform vec3 camPos;
 
 layout(binding = 2, std430) buffer ssbo1 {
 	vec3 positions[160000];
-	vec4 color;
+	vec4 grassDimensions;
 };
 
 layout(binding = 3, std430) buffer heightBuffer{
@@ -32,7 +35,7 @@ vec2 rotate(vec2 v, float a) {
 
 vec3 voroNoise(vec2 st, float angleOffset){
 	st += t * windSpeed * normalize(windDir);
-    st *= 10.0;
+    st *= 15.0;
 	
     vec3 color = vec3(0.0, 0.0, 0.0);
 
@@ -64,7 +67,7 @@ vec3 voroNoise(vec2 st, float angleOffset){
 
 //CONDITIONAL BOTH SCALES SHOULD BE EQUAL FOR THIS TO WORK 
 int getArrayFromUV(vec2 uv){
-	return int( scaley.x *gl_WorkGroupSize.x* uv.x) +   int(uv.y);
+	return int( density.x *gl_WorkGroupSize.x* uv.x) +   int(uv.y);
 }
 
 
@@ -72,10 +75,10 @@ int getArrayFromUV(vec2 uv){
 void populatePosition(vec2 uv){
 
 	vec3 tempWorldPos;
-	tempWorldPos.x =  uv.x *  mapSize.x/float( scaley.x * gl_WorkGroupSize.x );
-	tempWorldPos.z =  uv.y *  mapSize.z/float( scaley.y * gl_WorkGroupSize.y );
+	tempWorldPos.x =  uv.x *  float(mapSize.x / grassDims.x)/float( density.x * gl_WorkGroupSize.x );
+	tempWorldPos.z =  uv.y *  float(mapSize.z / grassDims.z)/float( density.y * gl_WorkGroupSize.y );
   
-	tempWorldPos.xz += random2(uv) *mapSize.xz/float(scaley.x * gl_WorkGroupSize.x );
+	tempWorldPos.xz += random2(uv) *mapSize.xz/float(density.x * gl_WorkGroupSize.x );
 	positions[getArrayFromUV(uv)] = tempWorldPos;	
 }
 
@@ -84,7 +87,7 @@ void MakeNoise(vec2 uv){
 
 	vec4 col = vec4(1,1,0,1);
     col.x =  float(uv.x)/(gl_NumWorkGroups.x * gl_WorkGroupSize.x);
-    col.y =  float(uv.x)/(gl_NumWorkGroups.x * gl_WorkGroupSize.x);
+    col.y =  float(uv.x)/(gl_NumWorkGroups.y * gl_WorkGroupSize.y);
     
     vec2 st = uv ;
     vec3 vNoise = voroNoise(uv/1000, 0.05* t);
@@ -94,7 +97,7 @@ void MakeNoise(vec2 uv){
 void main(){
 	
  	ivec2 uv = ivec2(gl_GlobalInvocationID.xy);
+    grassDimensions = vec4(grassDims, 0.0);
 	populatePosition(uv);
-	// calcChunk(gl_WorkGroupID);
     MakeNoise(uv);
 }
