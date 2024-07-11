@@ -18,7 +18,7 @@ uniform vec2 		windDir;
 uniform float windFwdSway;
 uniform float windRightSway;
 
-uniform float t;
+uniform float time;
 layout(location = 1) uniform vec3 cameraPos;
 
 layout(binding = 2, std430) readonly buffer ssbo1 {
@@ -73,7 +73,7 @@ void main(void)	{
 		vec3 windFwd = mat3(modelMatrix) * vec3(windDir.x, 0, -windDir.y);
 		vec3 windRight = normalize(cross(windFwd, UP));
 
-		float x =  radians(windRightSway) * sin(t)* windStrength;
+		float x =  radians(windRightSway) * sin(time)* windStrength;
 		float z = radians(windFwdSway)  * windStrength;
 		//flipping this here because for some reasion these are flipped
 		pos = rotMat(z, windRight) *rotMat(x, windFwd) * pos;

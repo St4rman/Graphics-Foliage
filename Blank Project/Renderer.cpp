@@ -27,7 +27,7 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
 	timer = parent.GetTimer();
 	
 	windSpeed = 0.02;
-	windDir   = { 1,0 };
+	windDir   = { 0 , 1 };
 	windFwdSway = 90;
 	windRightSway = 10;
 
@@ -76,6 +76,8 @@ bool Renderer::initTextures() {
 	earthBump = SOIL_load_OGL_texture(TEXTUREDIR"base_grassN.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
 	debugTex = SOIL_load_OGL_texture(TEXTUREDIR"test.jpg", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
 	grassTex = SOIL_load_OGL_texture(TEXTUREDIR"grassbush.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+	windTex  = SOIL_load_OGL_texture(TEXTUREDIR"wind-bump.jpg", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+
 
 	cubeMap = SOIL_load_OGL_cubemap(
 		TEXTUREDIR"left.png", TEXTUREDIR"right.png",
@@ -83,7 +85,7 @@ bool Renderer::initTextures() {
 		TEXTUREDIR"front.png", TEXTUREDIR"back.png",
 		SOIL_LOAD_RGB, SOIL_CREATE_NEW_ID, 0);
 
-	if (!earthTex || !earthBump || !cubeMap || !grassTex || !debugTex) {
+	if (!earthTex || !earthBump || !cubeMap || !grassTex || !debugTex || !windTex) {
 		return false;
 	}
 
@@ -339,12 +341,24 @@ void Renderer::DrawGrass() {
 
 	Vector3 temp = hSize/grassDimensions;
 	temp.y = 1.0f;
+	
+	glUniform1i(glGetUniformLocation(gpuShader->GetProgram(), "diffuseTex"), 0);
+	glUniform1i(glGetUniformLocation(gpuShader->GetProgram(), "windTex"),	 1);
+
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, compVnoise);
-	glUniform1i(glGetUniformLocation(gpuShader->GetProgram(), "diffuseTex"), 0);
+
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, windTex);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	
+
 	glUniform1i(glGetUniformLocation(gpuShader->GetProgram(), "useTexture"), 0);
+
+
 	glUniform3fv(glGetUniformLocation(gpuShader->GetProgram(), "spacePerBlade"), 1, (float*)&temp);
-	glUniform1f(glGetUniformLocation(gpuShader->GetProgram(), "t"), (float)timer->GetTotalTimeSeconds());
+	glUniform1f(glGetUniformLocation(gpuShader->GetProgram(), "time"), (float)timer->GetTotalTimeSeconds());
 	glUniform1f(glGetUniformLocation(gpuShader->GetProgram(), "windFwdSway"), (float)windFwdSway);
 	glUniform1f(glGetUniformLocation(gpuShader->GetProgram(), "windRightSway"), (float)windRightSway);
 	glUniform2fv(glGetUniformLocation(gpuShader->GetProgram(), "windDir"), 1, (float*)&windDir);

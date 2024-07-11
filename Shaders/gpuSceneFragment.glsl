@@ -1,14 +1,17 @@
 #version 430 core
 
 uniform sampler2D diffuseTex;
+uniform sampler2D windTex;
+
 uniform int		  useTexture;
-uniform float 	  t;
+uniform float 	  time;
 uniform vec3      cameraPos;
 
 uniform vec4 lightColor;
 uniform vec3 lightPos;
 uniform float lightRadius;
 
+uniform vec2 		windDir;
 
 float contrast   = 0.99;
 float saturation = 1.5;
@@ -76,6 +79,18 @@ mat4 brightnessMatrix( float brightness )
                  brightness, brightness, brightness, 1 );
 }
 
+vec4 addWind( vec2 uv ){
+	// uv = uv/10.0f;
+	float windTime = time * 0.02 * 10.0f;
+	uv  += windTime * vec2(-windDir.x, windDir.y);
+	return (texture2D(windTex, uv));
+}
+
+
+vec4 heightBlend(){
+	
+}
+
 //////////////////// FLAT COLORIZATION !!! ///////////////////////////////
 vec4 colorize(vec2 uv, vec3 objectPos){
 	
@@ -87,24 +102,30 @@ vec4 colorize(vec2 uv, vec3 objectPos){
 	tip 			= mix(vec4(0.0), tip, uv.y - 0.5);
 
 	vec4 finCol;
+	finCol = bladeCol;
+	finCol += vec4(tip.rgb * 0.5, 1.0);
+	finCol *= aoCol;
 
-	if(useTexture == 0){
-		
-		finCol = bladeCol;
-		finCol += vec4(tip.rgb * 0.5, 1.0);
-		finCol *= aoCol;
+	finCol += satMatrix(0.3) * addWind(objectPos.xz);
 
-	}
-	else {
-		finCol =  texture2D(diffuseTex, uv);
-	}
 	return finCol;
 }
+
 
 void main(void) {
 
 	vec2 uv 		= IN.texCoord;
 	vec3 objectPos	= IN.nWorldPos;
-	fragColour 		= contrastMatrix(contrast) * satMatrix(saturation) * colorize(uv, objectPos);
-	fragColour.rgb  = pow(fragColour.rgb, vec3(1.0/gamma));
+
+	if(useTexture == 0){
+
+		fragColour 		= contrastMatrix(contrast) * satMatrix(saturation) * colorize(uv, objectPos);
+		fragColour.rgb  = pow(fragColour.rgb, vec3(1.0/gamma));
+
+	}else {
+		fragColour = texture2D(diffuseTex, uv);
+		// fragColour = addWind(vec4(0,0,0,1), uv);
+
+	}
+	
 }
