@@ -18,6 +18,8 @@ float saturation = 1.5;
 float brightness = 0.1;
 float gamma      = 2.2;
 
+float heightBlendFactor = 10.0;
+
 vec4 AoColor 		= vec4( 0,0,0,1);
 vec4 topGreen 		= vec4(0.2824, 0.749, 0.2314, 1.0);
 vec4 bottomGreen 	= vec4(0.1294, 0.3294, 0.1059, 1.0);
@@ -88,6 +90,13 @@ vec4 addWind( vec2 uv ){
 	
 }
 
+float heightBlend(float yPosition){
+
+	//heigthmap y scale is 3.0
+	float tempY = (yPosition - 1.9f)/ 3.0f;
+	return smoothstep(0.0f, heightBlendFactor, tempY );
+}
+
 //////////////////// FLAT COLORIZATION !!! ///////////////////////////////
 vec4 colorize(vec2 uv, vec3 objectPos){
 	
@@ -103,10 +112,12 @@ vec4 colorize(vec2 uv, vec3 objectPos){
 	finCol += vec4(tip.rgb * 0.5, 1.0);
 	finCol *= aoCol;
 
-	// finCol = mix(finCol, vec4(1, 1.0, 0.0, 1.0) , heightBlend(objectPos));
-	vec4 wc = addWind(objectPos.xz);
-	finCol += wc * 0.1f;
+	finCol +=vec4(1.0, 0.5686, 0.0, 1.0) * heightBlend(objectPos.y);
 
+	vec4 wc = addWind(objectPos.xz);
+	wc = clamp (wc, 0.0, 1.0);
+	vec3 wct = mix(vec3(0.0), wc.xyz, heightBlend(objectPos.y));
+	finCol.xyz += mix(fragColour.xyz, wct, uv.y);
 	return finCol;
 }
 
@@ -123,8 +134,6 @@ void main(void) {
 
 	}else {
 		fragColour = texture2D(diffuseTex, uv);
-		// fragColour = addWind(vec4(0,0,0,1), uv);
-
 	}
 	
 }
