@@ -29,7 +29,7 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
 	windSpeed = 0.02;
 	windDir   = { 0 , 1 };
 	windFwdSway = 90;
-	windRightSway = 10;
+	windRightSway = 180;
 
 	grassDimensions = { 3, 20, 3 };
 	init = true;

@@ -18,11 +18,9 @@ float saturation = 1.5;
 float brightness = 0.1;
 float gamma      = 2.2;
 
-float heightBlendFactor = 10.0;
-
-vec4 AoColor 		= vec4( 0,0,0,1);
+vec4 AoColor 		= vec4(0.02, 0.0, 0.22, 1.0);
 vec4 topGreen 		= vec4(0.2039, 0.5373, 0.1647, 1.0);
-vec4 bottomGreen 	= vec4(0.1294, 0.3294, 0.1059, 1.0);
+vec4 bottomGreen 	= vec4(0.0, 0.3608, 0.2275, 1.0);
 
 
 layout (binding  = 2, std430) readonly buffer ssbo1 { 
@@ -90,7 +88,7 @@ vec4 addWind( vec2 uv ){
 	
 }
 
-float heightBlend(float yPosition){
+float heightBlend(float yPosition, float heightBlendFactor){
 
 	//heigthmap y scale is 3.0
 	float tempY = (yPosition - 1.9f)/ 3.0f;
@@ -112,12 +110,13 @@ vec4 colorize(vec2 uv, vec3 objectPos){
 	// finCol += vec4(tip.rgb * 0.5, 1.0);
 	finCol *= aoCol;
 
-	finCol +=vec4(1.0, 0.5686, 0.0, 1.0) * heightBlend(objectPos.y);
+	finCol +=vec4(0.5725, 1.0, 0.1686, 1.0) * heightBlend(objectPos.y , 10.0);
 
 	vec4 wc = addWind(objectPos.xz);
 	wc = clamp (wc, 0.0, 1.0);
-	vec3 wct = mix(vec3(0.0), wc.xyz, heightBlend(objectPos.y));
+	vec3 wct = mix(vec3(0.0), wc.xyz, heightBlend(objectPos.y , 8.0));
 	finCol.xyz = mix(finCol.xyz, wct, uv.y);
+	finCol.a = 1.0;
 	
 	return finCol;
 }
