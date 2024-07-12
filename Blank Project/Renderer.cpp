@@ -31,7 +31,7 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
 	windFwdSway = 90;
 	windRightSway = 10;
 
-	grassDimensions = { 5, 20, 5 };
+	grassDimensions = { 3, 20, 3 };
 	init = true;
 	
 }
@@ -166,18 +166,6 @@ bool Renderer::initSceneNodes() {
 		0,
 		0 }));
 	root->SetModelScale(Vector3(100, 100, 100));
-
-	/*for (int i = 0; i < 5; ++i) {
-		SceneNode* s = new SceneNode();
-		s->SetColour(Vector4(1.0f, 1.0f, 1.0f, 0.5f));
-		s->SetTransform(Matrix4::Translation(
-			Vector3(localOrigin.x + 500* i, localOrigin.y + 500, localOrigin.z)));
-		s->SetModelScale({ 100.0f, 100.0f, 100.0f });
-		s->SetBoundingRadius(100.0f);
-		s->SetMesh(quad);
-		s->SetTexture(earthTex);
-		root->AddChild(s);
-	}*/
 	return true;
 }
 
@@ -268,7 +256,7 @@ void Renderer::RenderScene() {
 
 	DrawSkybox();
 	DrawHeightMap();
-	DrawSceneNodeItems();
+	//DrawSceneNodeItems();
 	DrawGrass();
 	
 }

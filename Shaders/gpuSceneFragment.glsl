@@ -21,7 +21,7 @@ float gamma      = 2.2;
 float heightBlendFactor = 10.0;
 
 vec4 AoColor 		= vec4( 0,0,0,1);
-vec4 topGreen 		= vec4(0.2824, 0.749, 0.2314, 1.0);
+vec4 topGreen 		= vec4(0.2039, 0.5373, 0.1647, 1.0);
 vec4 bottomGreen 	= vec4(0.1294, 0.3294, 0.1059, 1.0);
 
 
@@ -83,7 +83,7 @@ mat4 brightnessMatrix( float brightness )
 
 vec4 addWind( vec2 uv ){
 
-	// uv = uv/5.0f;
+	uv = uv/5.0f;
 	float windTime = time * 0.02 * 10.0f;
 	uv  += windTime * vec2(-windDir.x, windDir.y);
 	return (texture2D(windTex, uv));
@@ -109,7 +109,7 @@ vec4 colorize(vec2 uv, vec3 objectPos){
 
 	vec4 finCol;
 	finCol = bladeCol;
-	finCol += vec4(tip.rgb * 0.5, 1.0);
+	// finCol += vec4(tip.rgb * 0.5, 1.0);
 	finCol *= aoCol;
 
 	finCol +=vec4(1.0, 0.5686, 0.0, 1.0) * heightBlend(objectPos.y);
@@ -117,7 +117,8 @@ vec4 colorize(vec2 uv, vec3 objectPos){
 	vec4 wc = addWind(objectPos.xz);
 	wc = clamp (wc, 0.0, 1.0);
 	vec3 wct = mix(vec3(0.0), wc.xyz, heightBlend(objectPos.y));
-	finCol.xyz += mix(fragColour.xyz, wct, uv.y);
+	finCol.xyz = mix(finCol.xyz, wct, uv.y);
+	
 	return finCol;
 }
 

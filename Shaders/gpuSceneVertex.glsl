@@ -58,6 +58,12 @@ mat3 rotMat(float angle, vec3 axis){
 	
 }
 
+float heightBasedBladeLen(float yPosition){
+
+	//heigthmap y scale is 3.0
+	float tempY = (yPos[gl_InstanceID] /grassDimensions.y);
+	return smoothstep(1.0f, 5.0f, tempY);
+}
 
 void main(void)	{
 	vec3 pos = position;
@@ -77,6 +83,8 @@ void main(void)	{
 		float z = radians(windFwdSway)  * windStrength;
 		//flipping this here because for some reasion these are flipped
 		pos = rotMat(z, windRight) *rotMat(x, windFwd) * pos;
+
+		pos.y += heightBasedBladeLen(1.0) * random2(worldPosCache.xz).x;
 	}
 	
 	//this is the final postion. Any changes to individual blades should be done above
@@ -88,7 +96,7 @@ void main(void)	{
 		worldPosition 	  -= spacePerBlade/2;
 	}
 	
-	gl_Position	  		= (projMatrix * viewMatrix * modelMatrix) * vec4(worldPosition, 1.0);
+	gl_Position	  		= (projMatrix * viewMatrix * modelMatrix) * vec4(worldPosition.x, worldPosition.y, worldPosition.z, 1.0);
 	OUT.texCoord  		= texCoord;
 	OUT.nWorldPos 		= wPos/ spacePerBlade;
 }
