@@ -37,7 +37,7 @@ in vec3 normal;
 
 out Vertex {
 	vec2 texCoord;
-	vec3 worldPos;
+	vec3 viewVector;
 	vec3 nWorldPos;
 	vec3 normal;
 }OUT;
@@ -99,4 +99,5 @@ void main(void)	{
 	gl_Position	  		= (projMatrix * viewMatrix * modelMatrix) * vec4(worldPosition.x, worldPosition.y, worldPosition.z, 1.0);
 	OUT.texCoord  		= texCoord;
 	OUT.nWorldPos 		= wPos/ spacePerBlade;
+	OUT.viewVector	    = cameraPos - wPos;
 }

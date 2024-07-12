@@ -5,7 +5,7 @@ uniform sampler2D windTex;
 
 uniform int		  useTexture;
 uniform float 	  time;
-uniform vec3      cameraPos;
+
 
 uniform vec4 lightColor;
 uniform vec3 lightPos;
@@ -35,7 +35,7 @@ layout(binding = 3, std430) buffer heightBuffer{
 
 in Vertex{
 	vec2 texCoord;
-	vec3 worldPos;
+	vec3 viewVector;
 	vec3 nWorldPos;
 	vec3 normal;
 } IN;
@@ -117,7 +117,7 @@ vec4 colorize(vec2 uv, vec3 objectPos){
 	vec3 wct = mix(vec3(0.0), wc.xyz, heightBlend(objectPos.y , 8.0));
 	finCol.xyz = mix(finCol.xyz, wct, uv.y);
 	finCol.a = 1.0;
-	
+
 	return finCol;
 }
 
@@ -126,6 +126,7 @@ void main(void) {
 
 	vec2 uv 		= IN.texCoord;
 	vec3 objectPos	= IN.nWorldPos;
+	vec3 viewVec 	= IN.viewVector;
 
 	if(useTexture == 0){
 
@@ -134,6 +135,10 @@ void main(void) {
 
 	}else {
 		fragColour = texture2D(diffuseTex, uv);
+	}
+
+	if(viewVec.x < 1.0f){
+		fragColour = vec4(1,0,0,1);
 	}
 	
 }
