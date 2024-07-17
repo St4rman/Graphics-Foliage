@@ -7,9 +7,9 @@ uniform int		  useTexture;
 uniform float 	  time;
 
 
-uniform vec4 lightColor;
-uniform vec3 lightPos;
-uniform float lightRadius;
+uniform vec4 	lightColor;
+uniform vec3 	lightPos;
+uniform float 	lightRadius;
 
 uniform vec2 		windDir;
 
@@ -112,10 +112,11 @@ vec4 colorize(vec2 uv, vec3 objectPos){
 
 	finCol +=vec4(0.5725, 1.0, 0.1686, 1.0) * heightBlend(objectPos.y , 10.0);
 
-	vec4 wc = addWind(objectPos.xz);
-	wc = clamp (wc, 0.0, 1.0);
-	vec3 wct = mix(vec3(0.0), wc.xyz, heightBlend(objectPos.y , 8.0));
-	finCol.xyz = mix(finCol.xyz, wct, uv.y);
+	// vec4 wc = addWind(objectPos.xz);
+	// wc = clamp (wc, 0.0, 1.0);
+	// vec3 wct = mix(vec3(0.0), wc.xyz, heightBlend(objectPos.y , 8.0));
+	// finCol.xyz = mix(finCol.xyz, wct, uv.y);
+
 	finCol.a = 1.0;
 
 	return finCol;
@@ -136,9 +137,5 @@ void main(void) {
 	}else {
 		fragColour = texture2D(diffuseTex, uv);
 	}
-
-	if(viewVec.x < 1.0f){
-		fragColour = vec4(1,0,0,1);
-	}
 	
-}
+} 

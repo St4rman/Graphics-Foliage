@@ -8,6 +8,8 @@ uniform vec3 mapSize;
 uniform vec2 density;
 uniform vec3 grassDims;
 
+uniform vec3 offset;
+
 uniform float windSpeed;
 uniform vec2 windDir;
 
@@ -79,7 +81,7 @@ void populatePosition(vec2 uv){
 	tempWorldPos.z =  uv.y *  float(mapSize.z / grassDims.z)/float( density.y * gl_WorkGroupSize.y );
   
 	tempWorldPos.xz += random2(uv) *mapSize.xz/float(density.x * gl_WorkGroupSize.x );
-	positions[getArrayFromUV(uv)] = tempWorldPos;	
+	positions[getArrayFromUV(uv)] = tempWorldPos + offset;	
 }
 
 

@@ -16,6 +16,7 @@ in Vertex {
 out vec4 fragColour;
 
 void main(void)	{
+
 	vec3 incident = normalize(lightPos- IN.worldPos);
 	vec3 viewDir = normalize(cameraPos - IN.worldPos);
 	vec3 halfDir = normalize(incident + viewDir);
@@ -35,4 +36,5 @@ void main(void)	{
 	fragColour.rgb +=  surface * 0.1f;
 	fragColour.rgb *= vec3(vec3(0.1098, 0.7882, 0.4039));
 	fragColour.a  = diffuse.a;
+	
 }

@@ -71,7 +71,7 @@ void main(void)	{
 	mat3 normalMatrix = transpose(inverse(mat3(modelMatrix)));
 	OUT.normal = normalize(normalMatrix * normalize(normal));
 
-	vec3 worldPosCache = vec3(positions[gl_InstanceID].x , 0, positions[gl_InstanceID].z) + pos;
+	vec3 worldPosCache = vec3(positions[gl_InstanceID].x , 0, positions[gl_InstanceID].z);
 	float windStrength = texture2D(diffuseTex,(worldPosCache/spacePerBlade).xz).x;
 
 	if(pos.y > 0.1f && useTexture == 0){
@@ -92,12 +92,9 @@ void main(void)	{
 	worldPosition.x *= -1.0f;
 	
 	vec3 wPos = worldPosition;
-	if(useTexture == 0){
-		worldPosition 	  -= spacePerBlade/2;
-	}
-	
+
 	gl_Position	  		= (projMatrix * viewMatrix * modelMatrix) * vec4(worldPosition.x, worldPosition.y, worldPosition.z, 1.0);
 	OUT.texCoord  		= texCoord;
 	OUT.nWorldPos 		= wPos/ spacePerBlade;
-	OUT.viewVector	    = cameraPos - wPos;
+	OUT.viewVector	    = worldPosition - vec3(cameraPos.x, 0, cameraPos.z);
 }

@@ -51,6 +51,7 @@ protected:
 
 	Vector2 SCALE = { 0,0 };
 	int		TOTALDISPATCH = 0;
+	Vector3 heightmapSize;
 
 	Shader* lightShader;
 	Shader* reflectShader;
