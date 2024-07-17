@@ -66,6 +66,7 @@ float heightBasedBladeLen(float yPosition){
 }
 
 void main(void)	{
+
 	vec3 pos = position;
 	
 	mat3 normalMatrix = transpose(inverse(mat3(modelMatrix)));
@@ -81,11 +82,17 @@ void main(void)	{
 
 		float x =  radians(windRightSway) * sin(time)* windStrength;
 		float z = radians(windFwdSway)  * windStrength;
-		//flipping this here because for some reasion these are flipped
-		pos = rotMat(z, windRight) *rotMat(x, windFwd) * pos;
 
-		pos.y += heightBasedBladeLen(1.0) * random2(worldPosCache.xz).x;
+
+		//flipping this here because for some reasion these are flipped
+		// pos = rotMat(z, windRight) *rotMat(x, windFwd) * pos;
+		// pos.y += heightBasedBladeLen(1.0) * random2(worldPosCache.xz).x;
 	}
+	
+	vec3 toCam = pos -  cameraPos;
+	vec3 camRight = normalize(cross(toCam, UP));
+	pos = rotMat(90, camRight) * pos;
+	
 	
 	//this is the final postion. Any changes to individual blades should be done above
 	vec3 worldPosition = vec3(positions[gl_InstanceID].x , (yPos[gl_InstanceID] /grassDimensions.y) +1.9f, positions[gl_InstanceID].z) + pos;
@@ -96,5 +103,6 @@ void main(void)	{
 	gl_Position	  		= (projMatrix * viewMatrix * modelMatrix) * vec4(worldPosition.x, worldPosition.y, worldPosition.z, 1.0);
 	OUT.texCoord  		= texCoord;
 	OUT.nWorldPos 		= wPos/ spacePerBlade;
-	OUT.viewVector	    = worldPosition - vec3(cameraPos.x, 0, cameraPos.z);
+	// OUT.viewVector	    = worldPosition - vec3(cameraPos.x, 0, cameraPos.z);
+
 }
