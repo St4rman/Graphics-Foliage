@@ -42,8 +42,9 @@ int main()	{
 		}
 
 		if (Window::GetKeyboard()->KeyTriggered(KEYBOARD_F2)) {
-			showMouse = !showMouse;
-			w.ShowOSPointer(showMouse);
+			/*showMouse = !showMouse;
+			w.ShowOSPointer(showMouse);*/
+			Renderer.updateWindSpeed(0.09f);
 		}
 	}
 

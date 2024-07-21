@@ -25,9 +25,8 @@ public:
 
 	void RenderScene() override;
 	void UpdateScene(float dt) override;
-
-
 	
+	void updateWindSpeed(float speed) { windSpeed = speed; }
 
 protected:
 
