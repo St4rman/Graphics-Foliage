@@ -82,16 +82,15 @@ void main(void)	{
 
 		float x =  radians(windRightSway) * sin(time)* windStrength;
 		float z = radians(windFwdSway)  * windStrength;
-
-
+		
 		//flipping this here because for some reasion these are flipped
-		// pos = rotMat(z, windRight) *rotMat(x, windFwd) * pos;
-		// pos.y += heightBasedBladeLen(1.0) * random2(worldPosCache.xz).x;
+		pos = rotMat(z, windRight) *rotMat(x, windFwd) * pos;
+		pos.y += heightBasedBladeLen(1.0) * random2(worldPosCache.xz).x;
 	}
 	
-	vec3 toCam = pos -  cameraPos;
-	vec3 camRight = normalize(cross(toCam, UP));
-	pos = rotMat(90, camRight) * pos;
+	// vec3 toCam = pos -  cameraPos;
+	// vec3 camRight = normalize(cross(toCam, UP));
+	// pos = rotMat(90, camRight) * pos;
 	
 	
 	//this is the final postion. Any changes to individual blades should be done above

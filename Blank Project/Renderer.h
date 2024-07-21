@@ -9,6 +9,8 @@
 #include "../nclgl/CubeRobot.h"
 #include "../nclgl/ComputeShader.h"
 #include <algorithm>
+#include "imgui.h"
+#include "imgui_impl_opengl3.h"
 
 class Camera;
 class SceneNode;
