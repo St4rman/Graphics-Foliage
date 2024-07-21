@@ -1,4 +1,3 @@
-
 #include "../NCLGL/window.h"
 #include "Renderer.h"
 #include "TestRenderer.h"
@@ -18,7 +17,7 @@ int main()	{
 	if(!Renderer.HasInitialised()) {
 		return -1;
 	}
-	w.LockMouseToWindow(true);
+	w.LockMouseToWindow(false);
 	w.ShowOSPointer(showMouse);
 
 
@@ -42,9 +41,11 @@ int main()	{
 		}
 
 		if (Window::GetKeyboard()->KeyTriggered(KEYBOARD_F2)) {
-			/*showMouse = !showMouse;
-			w.ShowOSPointer(showMouse);*/
-			Renderer.updateWindSpeed(0.09f);
+			Renderer.updateWindSpeed(GUI->returnWSpeed() / 1000.0f);
+		}
+		if (Window::GetKeyboard()->KeyDown(KEYBOARD_F3)) {
+			//showMouse != showMouse;
+			w.ShowOSPointer(true);
 		}
 	}
 
