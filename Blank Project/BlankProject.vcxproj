@@ -143,6 +143,7 @@
     <ClCompile Include="..\Third Party\IMGUI\imgui_impl_opengl3.cpp" />
     <ClCompile Include="..\Third Party\IMGUI\imgui_tables.cpp" />
     <ClCompile Include="..\Third Party\IMGUI\imgui_widgets.cpp" />
+    <ClCompile Include="gui.cpp" />
     <ClCompile Include="MainClient.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Resources.cpp" />
@@ -157,6 +158,7 @@
     <ClInclude Include="..\Third Party\IMGUI\imstb_rectpack.h" />
     <ClInclude Include="..\Third Party\IMGUI\imstb_textedit.h" />
     <ClInclude Include="..\Third Party\IMGUI\imstb_truetype.h" />
+    <ClInclude Include="gui.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Resources.h" />
     <ClInclude Include="TestRenderer.h" />
