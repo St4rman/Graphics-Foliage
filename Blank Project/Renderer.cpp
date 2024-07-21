@@ -7,7 +7,6 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
 	if (!initShaders())  return;
 	if (!initTextures()) return;
 	if (!initMeshes())   return;
-	
 	if (!initComputeShaders()) return;
 	
 	heightmapSize = heightMap->GetHeightmapSize();
@@ -187,14 +186,6 @@ void Renderer::UpdateScene(float dt) {
 	frameFrustum.FromMatrix(projMatrix * viewMatrix);
 
 	root->Update(dt);
-
-
-	if (Window::GetKeyboard()->KeyDown(KEYBOARD_0)) {
-		std::cout << camera->GetPosition();
-	}
-	if (Window::GetKeyboard()->KeyDown(KEYBOARD_1)) {
-		camera->SetPosition({ 0,0,0 });
-	}
 }
 
 void Renderer::BuildNodeLists(SceneNode* from) {
@@ -317,8 +308,8 @@ void Renderer::DrawGrass() {
 
 	Vector3 hSize = heightMap->GetHeightmapSize();
 
-	Vector3 temp = - hSize / grassDimensions;
-	temp.y = 1.0f;
+	Vector3 grassOffset = - hSize / grassDimensions;
+	grassOffset.y = 1.0f;
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, ssboID);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, heightBuffer);
 
@@ -335,7 +326,7 @@ void Renderer::DrawGrass() {
 	glUniform2fv(glGetUniformLocation(compShader->GetProgram(), "windDir"), 1, (float*)&windDir);
 	glUniform3fv(glGetUniformLocation(compShader->GetProgram(), "cameraPos"), 1, (float*)&camera->GetPosition());
 	glUniform3fv(glGetUniformLocation(compShader->GetProgram(), "grassDims"), 1, (float*)&grassDimensions);
-	glUniform3fv(glGetUniformLocation(compShader->GetProgram(), "offset"), 1, (float*)&temp);
+	glUniform3fv(glGetUniformLocation(compShader->GetProgram(), "offset"), 1, (float*)&grassOffset);
 
 
 	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
@@ -363,7 +354,7 @@ void Renderer::DrawGrass() {
 	glUniform1i(glGetUniformLocation(gpuShader->GetProgram(), "useTexture"), 0);
 
 
-	glUniform3fv(glGetUniformLocation(gpuShader->GetProgram(), "spacePerBlade"), 1, (float*)&temp);
+	glUniform3fv(glGetUniformLocation(gpuShader->GetProgram(), "spacePerBlade"), 1, (float*)&grassOffset);
 	glUniform1f(glGetUniformLocation(gpuShader->GetProgram(), "time"), (float)timer->GetTotalTimeSeconds());
 	glUniform1f(glGetUniformLocation(gpuShader->GetProgram(), "windFwdSway"), (float)windFwdSway);
 	glUniform1f(glGetUniformLocation(gpuShader->GetProgram(), "windRightSway"), (float)windRightSway);

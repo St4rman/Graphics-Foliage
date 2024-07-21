@@ -30,9 +30,9 @@ void gui::BufferGuiData() {
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui::NewFrame();
 
-	////ImGui::Begin("this is a temp window", 0, 100);
+	ImGui::Begin("this is a temp window");
 	ImGui::Text("Hello, world!");
-	////ImGui::End();
+	ImGui::End();
 }
 
 void gui::RenderGui() {

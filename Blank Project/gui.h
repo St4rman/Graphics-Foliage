@@ -11,7 +11,7 @@ public:
 
 	void BufferGuiData();
 	void RenderGui();
-	bool hasGuiInit() { return init; }
+	bool hasGuiInit() const { return init; }
 
 protected:
 	bool init; 
