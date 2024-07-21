@@ -30,6 +30,12 @@ gui::~gui() {
 void gui::BufferGuiData() {
 
 	ImGui_ImplOpenGL3_NewFrame();
+
+	ImGuiIO& io = ImGui::GetIO();
+	POINT p{};
+	GetCursorPos(&p);
+	io.MousePos = ImVec2(p.x, p.y);
+
 	ImGui::NewFrame();
 
 	ImGui::Begin("Grass Rendering Tool.", 0, ImGuiWindowFlags_AlwaysAutoResize);
@@ -41,11 +47,10 @@ void gui::BufferGuiData() {
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 	}
 	ImVec2 v = ImGui::GetWindowSize();  // v = {32, 48} ,   is tool small
-	ImGuiL:
+
 	ImGui::Text("%f %f", v.x, v.y);
 	ImGui::End();
 
-	ImGuiIO& io = ImGui::GetIO();
 }
 
 //treated as update until further things requiroed
