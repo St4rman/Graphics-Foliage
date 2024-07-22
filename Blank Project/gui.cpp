@@ -54,9 +54,7 @@ void gui::BufferGuiData() {
 
 }
 
-float clamp(float v, float lo, float hi) {
-	return std::max(lo, std::min(v, hi));
-}
+
 
 //treated as update until further things requiroed
 void gui::RenderGui() {
@@ -76,6 +74,6 @@ void gui::RenderGui() {
 		windDir = WIND_DIR[index];
 	}
 
-	windSpeed = clamp(windSpeed, 0, 200.0f);
+	windSpeed = std::max(0.0f, std::min(windSpeed, 200.0f));
 
 }

@@ -23,6 +23,5 @@ protected:
 	float windSpeed;
 	Vector2 windDir;
 	std::vector<Vector2> WIND_DIR = { { -1,  0},  { 1,  0}, { 0,  1}, { 0, -1}, { -1, 1}, {1, 1}, {-1,  -1}, {1, -1} };
-	std::vector<ImGuiDir> curDir = { ImGuiDir_Up, };
 };
 
