@@ -6,6 +6,9 @@
 int main()	{
 	Window w("Grass time!", 1280, 720, false);
 	bool showMouse = false;
+	w.LockMouseToWindow(true);
+	w.ShowOSPointer(showMouse);
+	
 
 	if(!w.HasInitialised()) {
 		return -1;
@@ -17,8 +20,7 @@ int main()	{
 	if(!Renderer.HasInitialised()) {
 		return -1;
 	}
-	w.LockMouseToWindow(false);
-	w.ShowOSPointer(showMouse);
+	
 
 
 	gui* GUI = new gui(1280, 720);
@@ -42,6 +44,7 @@ int main()	{
 
 		if (Window::GetKeyboard()->KeyTriggered(KEYBOARD_F2)) {
 			Renderer.updateWindSpeed(GUI->returnWSpeed() / 1000.0f);
+			Renderer.updateWindDir(GUI->returnWDir());
 		}
 		if (Window::GetKeyboard()->KeyDown(KEYBOARD_F3)) {
 			//showMouse != showMouse;

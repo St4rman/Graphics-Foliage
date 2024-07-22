@@ -17,7 +17,9 @@ gui::gui(int w, int h) {
 	ImGui_ImplOpenGL3_Init("#version 430");
 	std::cout << "inited";
 	init = true;
-	windSpeed = 0.0f;
+
+	windSpeed = 20.0f;
+	windDir = { 0,1 };
 }
 
 gui::~gui() {
@@ -41,16 +43,19 @@ void gui::BufferGuiData() {
 	ImGui::Begin("Grass Rendering Tool.", 0, ImGuiWindowFlags_AlwaysAutoResize);
 	{
 		int show = 1;
-		ImGui::Text(u8"Hello, world! ");
+		ImGui::Text(u8"Press + and - to adjust the wind speed! %i", (int)windSpeed);
 		ImGui::SliderFloat("Wind Speed", &windSpeed, 0.0f, 200.0f);
 		ImGui::Text("Press Tab to cycle Wind Direction");
+		ImGui::SameLine();
+		ImGui::ArrowButton("##Right", ImGuiDir(index));
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 	}
-	ImVec2 v = ImGui::GetWindowSize();  // v = {32, 48} ,   is tool small
-
-	ImGui::Text("%f %f", v.x, v.y);
 	ImGui::End();
 
+}
+
+float clamp(float v, float lo, float hi) {
+	return std::max(lo, std::min(v, hi));
 }
 
 //treated as update until further things requiroed
@@ -58,11 +63,19 @@ void gui::RenderGui() {
 
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
 	if (Window::GetKeyboard()->KeyTriggered(KEYBOARD_PLUS)) {
 		windSpeed += 10.0f;
 	}
 	if (Window::GetKeyboard()->KeyTriggered(KEYBOARD_MINUS)) {
 		windSpeed -= 10.0f;
 	}
+	if (Window::GetKeyboard()->KeyTriggered(KEYBOARD_TAB)) {
+		index += 1;
+		if (index == WIND_DIR.size()) { index = 0; }
+		windDir = WIND_DIR[index];
+	}
+
+	windSpeed = clamp(windSpeed, 0, 200.0f);
 
 }

@@ -26,7 +26,8 @@ public:
 	void RenderScene() override;
 	void UpdateScene(float dt) override;
 	
-	void updateWindSpeed(float speed) { windSpeed = speed; }
+	void updateWindSpeed (float speed)			{ windSpeed	 = speed; }
+	void updateWindDir	 (Vector2 newDir)		{ windDir	 = newDir;  }
 
 protected:
 
