@@ -9,6 +9,8 @@
 #include "../nclgl/CubeRobot.h"
 #include "../nclgl/ComputeShader.h"
 #include <algorithm>
+#include "imgui.h"
+#include "imgui_impl_opengl3.h"
 
 class Camera;
 class SceneNode;
@@ -23,9 +25,9 @@ public:
 
 	void RenderScene() override;
 	void UpdateScene(float dt) override;
-
-
 	
+	void updateWindSpeed (float speed)			{ windSpeed	 = speed; }
+	void updateWindDir	 (Vector2 newDir)		{ windDir	 = newDir;  }
 
 protected:
 

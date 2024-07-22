@@ -98,6 +98,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>E:\Projects\GameDev\DIssertaion\Proc-Fol-Gfx\Third Party\IMGUI;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -136,12 +137,28 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\Third Party\IMGUI\imgui.cpp" />
+    <ClCompile Include="..\Third Party\IMGUI\imgui_demo.cpp" />
+    <ClCompile Include="..\Third Party\IMGUI\imgui_draw.cpp" />
+    <ClCompile Include="..\Third Party\IMGUI\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="..\Third Party\IMGUI\imgui_tables.cpp" />
+    <ClCompile Include="..\Third Party\IMGUI\imgui_widgets.cpp" />
+    <ClCompile Include="gui.cpp" />
     <ClCompile Include="MainClient.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Resources.cpp" />
     <ClCompile Include="TestRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Third Party\IMGUI\imconfig.h" />
+    <ClInclude Include="..\Third Party\IMGUI\imgui.h" />
+    <ClInclude Include="..\Third Party\IMGUI\imgui_impl_opengl3.h" />
+    <ClInclude Include="..\Third Party\IMGUI\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="..\Third Party\IMGUI\imgui_internal.h" />
+    <ClInclude Include="..\Third Party\IMGUI\imstb_rectpack.h" />
+    <ClInclude Include="..\Third Party\IMGUI\imstb_textedit.h" />
+    <ClInclude Include="..\Third Party\IMGUI\imstb_truetype.h" />
+    <ClInclude Include="gui.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Resources.h" />
     <ClInclude Include="TestRenderer.h" />
