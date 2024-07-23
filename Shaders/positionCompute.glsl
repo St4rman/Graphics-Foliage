@@ -16,12 +16,12 @@ uniform vec2 windDir;
 uniform vec3 camPos;
 
 layout(binding = 2, std430) buffer ssbo1 {
-	vec3 positions[160000];
+	vec3 positions[640000];
 	vec4 grassDimensions;
 };
 
 layout(binding = 3, std430) buffer heightBuffer{
-    float yPos[160000];
+    float yPos[640000];
 };
 
 vec2 random2( vec2 p ) {

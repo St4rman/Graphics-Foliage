@@ -22,12 +22,12 @@ uniform float time;
 layout(location = 1) uniform vec3 cameraPos;
 
 layout(binding = 2, std430) readonly buffer ssbo1 {
-	vec3 positions[160000];
+	vec3 positions[640000];
 	vec4 grassDimensions;
 };
 
 layout(binding = 3, std430) buffer heightBuffer{
-    float yPos[160000];
+    float yPos[640000];
 };
 
 in vec3 position;
