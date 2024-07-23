@@ -13,7 +13,7 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
 	if (!initSceneNodes()) return;
 
 	camera = new Camera(-45.0f, 0.0f, {0,0,0});
-	light = new Light(heightmapSize * Vector3(0.5f, 4.0, 0.5f), Vector4(1, 1, 1, 1), 10000);
+	light = new Light(heightmapSize * Vector3(0.5f, 3.0, 0.5f), Vector4(1, 1, 1, 1), 10000);
 
 	localOrigin = heightmapSize * Vector3(0.5f, 5.0f, 0.5f);
 

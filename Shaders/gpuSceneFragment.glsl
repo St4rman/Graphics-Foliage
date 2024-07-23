@@ -101,9 +101,9 @@ vec4 colorize(vec2 uv, vec3 objectPos){
 	vec4 bladeCol 	 = mix(topGreen, bottomGreen, uv.y);
 	vec4 windValue   =  texture2D(diffuseTex, objectPos.xz);
 	windValue 		*= vec4(1.0, 1.0, 1.0, 1.0);
-	vec4 aoCol 		= mix(vec4(1.0f), AoColor, uv.y);
-	vec4 tip 		= 0.5 * clamp(1.0 -  (windValue * 2.0), 0.0, 1.0);
-	tip 			= mix(vec4(0.0), tip, uv.y - 0.5);
+	vec4 aoCol 		 = mix(vec4(1.0f), AoColor, uv.y);
+	vec4 tip 		 = 0.5 * clamp(1.0 -  (windValue * 2.0), 0.0, 1.0);
+	tip 			 = mix(vec4(0.0), tip, uv.y - 0.5);
 
 	vec4 finCol;
 	finCol = bladeCol;
@@ -118,7 +118,6 @@ vec4 colorize(vec2 uv, vec3 objectPos){
 	// finCol.xyz = mix(finCol.xyz, wct, uv.y);
 
 	finCol.a = 1.0;
-
 	return finCol;
 }
 

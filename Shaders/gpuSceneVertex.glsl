@@ -67,7 +67,7 @@ float heightBasedBladeLen(){
 void main(void)	{
 
 	vec3 pos = position;
-	
+
 	mat3 normalMatrix = transpose(inverse(mat3(modelMatrix)));
 	OUT.normal = normalize(normalMatrix * normalize(normal));
 
