@@ -58,9 +58,8 @@ mat3 rotMat(float angle, vec3 axis){
 	
 }
 
-float heightBasedBladeLen(float yPosition){
-
-	//heigthmap y scale is 3.0
+float heightBasedBladeLen(){
+	
 	float tempY = (yPos[gl_InstanceID] /grassDimensions.y);
 	return smoothstep(1.0f, 5.0f, tempY);
 }
@@ -85,13 +84,8 @@ void main(void)	{
 		
 		//flipping this here because for some reasion these are flipped
 		pos = rotMat(z, windRight) *rotMat(x, windFwd) * pos;
-		pos.y += heightBasedBladeLen(1.0) * random2(worldPosCache.xz).x;
+		pos.y += heightBasedBladeLen() * random2(worldPosCache.xz).x;
 	}
-	
-	// vec3 toCam = pos -  cameraPos;
-	// vec3 camRight = normalize(cross(toCam, UP));
-	// pos = rotMat(90, camRight) * pos;
-	
 	
 	//this is the final postion. Any changes to individual blades should be done above
 	vec3 worldPosition = vec3(positions[gl_InstanceID].x , (yPos[gl_InstanceID] /grassDimensions.y) +1.9f, positions[gl_InstanceID].z) + pos;
