@@ -28,6 +28,7 @@ public:
 	
 	void updateWindSpeed (float speed)			{ windSpeed	 = speed; }
 	void updateWindDir	 (Vector2 newDir)		{ windDir	 = newDir;  }
+	Vector3 getCamPos()							{ return camera->GetPosition(); }
 
 protected:
 

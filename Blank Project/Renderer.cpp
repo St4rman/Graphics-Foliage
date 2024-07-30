@@ -31,7 +31,7 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
 	windFwdSway = 90;
 	windRightSway = 70;
 
-	grassDimensions = { 3, 15, 3 };
+	grassDimensions = { 4, 15, 4 };
 	init = true;
 	
 }
@@ -360,6 +360,7 @@ void Renderer::DrawGrass() {
 	glUniform1f(glGetUniformLocation(gpuShader->GetProgram(), "windRightSway"), (float)windRightSway);
 	glUniform2fv(glGetUniformLocation(gpuShader->GetProgram(), "windDir"), 1, (float*)&windDir);
 	glUniform3fv(glGetUniformLocation(gpuShader->GetProgram(), "cameraPos"), 1, (float*)&camera->GetPosition());
+	glUniform3fv(glGetUniformLocation(gpuShader->GetProgram(), "grassDims"), 1, (float*)&grassDimensions);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
