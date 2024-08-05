@@ -1,6 +1,6 @@
 #version 430 core
 
-layout(local_size_x = 10, local_size_y =10, local_size_z = 1) in;
+layout(local_size_x = 20, local_size_y =20, local_size_z = 1) in;
 layout(rgba32f, binding = 0) uniform image2D imgOutput;
 layout(location = 0) uniform float t;
 
@@ -16,12 +16,12 @@ uniform vec2 windDir;
 uniform vec3 camPos;
 
 layout(binding = 2, std430) buffer ssbo1 {
-	vec3 positions[640000];
+	vec3 positions[2560000];
 	vec4 grassDimensions;
 };
 
 layout(binding = 3, std430) buffer heightBuffer{
-    float yPos[640000];
+    float yPos[2560000];
 };
 
 vec2 random2( vec2 p ) {

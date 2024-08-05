@@ -2,7 +2,7 @@
 
 Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
 	SCALE = { 80, 80 };
-	TOTALDISPATCH = SCALE.x * SCALE.y * 10 * 10;
+	TOTALDISPATCH = SCALE.x * SCALE.y * 20 * 20;
 
 	if (!initShaders())  return;
 	if (!initTextures()) return;
@@ -33,7 +33,7 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
 	windFwdSway = 90;
 	windRightSway = 70;
 
-	grassDimensions = { 3, 15, 3 };
+	grassDimensions = { 2, 15, 2 };
 	init = true;
 	
 }
@@ -156,7 +156,7 @@ bool Renderer::initMeshes(){
 	triangle	= Mesh::GenerateTriangle();
 	triangle->GenerateNormals();
 	triangle->GenerateTangents();
-	heightMap	= new HeightMap(TEXTUREDIR"noise3.png", { 10.0f, 10.0f, 10.0f });
+	heightMap	= new HeightMap(TEXTUREDIR"bigNoise.png", { 5.0f, 5.0f, 5.0f });
 	grassMesh	= Mesh::LoadFromMeshFile("GrassVert.msh");
 
 	return heightMap->loadSuccess();

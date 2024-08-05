@@ -22,12 +22,12 @@ uniform float time;
 layout(location = 1) uniform vec3 cameraPos;
 
 layout(binding = 2, std430) readonly buffer ssbo1 {
-	vec3 positions[640000];
+	vec3 positions[2560000];
 	vec4 grassDimensions;
 };
 
 layout(binding = 3, std430) buffer heightBuffer{
-    float yPos[640000];
+    float yPos[2560000];
 };
 
 in vec3 position;
@@ -96,6 +96,6 @@ void main(void)	{
 	gl_Position	  		= (projMatrix * viewMatrix * modelMatrix) * vec4(worldPosition.x, worldPosition.y, worldPosition.z, 1.0);
 	OUT.texCoord  		= texCoord;
 	OUT.nWorldPos 		= wPos/ spacePerBlade;
-	// OUT.viewVector	    = worldPosition - vec3(cameraPos.x, 0, cameraPos.z);
+	OUT.viewVector	    = worldPosition - vec3(cameraPos.x, 0, cameraPos.z);
 
 }

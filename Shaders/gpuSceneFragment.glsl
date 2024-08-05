@@ -24,12 +24,12 @@ vec4 bottomGreen 	= vec4(0.0, 0.3608, 0.2275, 1.0);
 
 
 layout (binding  = 2, std430) readonly buffer ssbo1 { 
-	vec3 positions[640000];
+	vec3 positions[2560000];
 	vec4 grassDimensions;
 };
 
 layout(binding = 3, std430) buffer heightBuffer{
-    float yPos[640000];
+    float yPos[2560000];
 };
 
 
@@ -110,7 +110,7 @@ vec4 colorize(vec2 uv, vec3 objectPos){
 	// finCol += vec4(tip.rgb * 0.5, 1.0);
 	finCol *= aoCol;
 
-	finCol +=vec4(0.5451, 0.8275, 0.2784, 1.0) * heightBlend(objectPos.y , 10.0);
+	finCol +=vec4(0.4431, 0.6235, 0.2706, 1.0) * heightBlend(objectPos.y , 10.0);
 
 	// vec4 wc = addWind(objectPos.xz);
 	// wc = clamp (wc, 0.0, 1.0);
