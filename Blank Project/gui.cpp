@@ -49,7 +49,8 @@ void gui::BufferGuiData() {
 		ImGui::SameLine();
 		ImGui::ArrowButton("##Right", ImGuiDir(index));
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-	}
+		ImGui::Text("Camera Pos: %f x, %f y, %f z",cameraPos.x, cameraPos.y, cameraPos.z);
+;	}
 	ImGui::End();
 
 }

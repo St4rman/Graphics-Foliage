@@ -35,6 +35,7 @@ int main()	{
 
 		GUI->BufferGuiData();
 		GUI->RenderGui();
+		GUI->UpdateCamPos(Renderer.getCamPos());
 
 		Renderer.SwapBuffers();
 

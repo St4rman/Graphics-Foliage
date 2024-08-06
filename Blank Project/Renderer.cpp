@@ -1,8 +1,10 @@
 #include "Renderer.h"
 
 Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
+	
 	SCALE = { 80, 80 };
 	TOTALDISPATCH = SCALE.x * SCALE.y * 20 * 20;
+  cameraStartPos = { 2402.71f, 340.03f, -3900.0f };
 
 	if (!initShaders())  return;
 	if (!initTextures()) return;
@@ -12,7 +14,8 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
 	heightmapSize = heightMap->GetHeightmapSize();
 	
 
-	camera = new Camera(-45.0f, 0.0f, {0,0,0});
+
+	camera = new Camera(-6.4f, 161.0f, cameraStartPos);
 	light = new Light(heightmapSize* Vector3(0.5f, heightmapSize.x * 0.5f / heightmapSize.y, -0.5f), Vector4(1, 1, 1, 1), heightmapSize.x);
 
 	if (!initSceneNodes()) return;
@@ -33,7 +36,11 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
 	windFwdSway = 90;
 	windRightSway = 70;
 
+
+	//grassDimensions = { 4, 15, 4 };
+
 	grassDimensions = { 2, 15, 2 };
+
 	init = true;
 	
 }
@@ -187,6 +194,7 @@ void Renderer::UpdateScene(float dt) {
 	frameFrustum.FromMatrix(projMatrix * viewMatrix);
 
 	root->Update(dt);
+	
 }
 
 void Renderer::BuildNodeLists(SceneNode* from) {
@@ -262,7 +270,7 @@ void Renderer::RenderScene() {
 
 	DrawSkybox();
 	DrawHeightMap();
-	DrawSceneNodeItems();
+	//DrawSceneNodeItems();
 	DrawGrass();
 	
 }
@@ -361,6 +369,7 @@ void Renderer::DrawGrass() {
 	glUniform1f(glGetUniformLocation(gpuShader->GetProgram(), "windRightSway"), (float)windRightSway);
 	glUniform2fv(glGetUniformLocation(gpuShader->GetProgram(), "windDir"), 1, (float*)&windDir);
 	glUniform3fv(glGetUniformLocation(gpuShader->GetProgram(), "cameraPos"), 1, (float*)&camera->GetPosition());
+	glUniform3fv(glGetUniformLocation(gpuShader->GetProgram(), "grassDims"), 1, (float*)&grassDimensions);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
