@@ -342,8 +342,6 @@ void Renderer::DrawGrass() {
 
 	BindShader(gpuShader);
 	SetShaderLight(*light);
-
-	modelMatrix = Matrix4::Translation({ 0 , 0, 0}) * Matrix4::Scale(grassDimensions);
 	textureMatrix.ToIdentity();
 
 	

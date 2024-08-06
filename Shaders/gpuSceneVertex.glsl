@@ -3,7 +3,7 @@
 const vec3 UP 		= vec3(0,1,0);
 const vec3 RIGHT 	= vec3(1,0,0);
 const vec3 FWD 		= vec3(0,0,1);
-const float RADIUS  = 200.0f;
+const float RADIUS  = 1000.0f;
 const float LANE_SIZE = 30.0f;
 
 uniform mat4 		modelMatrix;
@@ -46,6 +46,13 @@ out Vertex {
 	vec3 normal;
 }OUT;
 
+mat4 scale(vec3 _scale){
+	return mat4(_scale.x, 0, 0, 0,
+				0, _scale.y ,0,0,
+				0, 0, _scale.z, 0,
+				0, 0, 0, 1);
+}
+
 vec2 random2( vec2 p ) {
     return fract(sin(vec2(dot(p,vec2(127.1,311.7)),dot(p,vec2(269.5,183.3))))*43758.5453);
 }
@@ -77,22 +84,23 @@ float heightBasedBladeLen(){
 	
 	float tempY = (yPos[gl_InstanceID] /grassDimensions.y);
 	return smoothstep(1.0f, 5.0f, tempY);
+
 }
 
 void main(void)	{
 
-	vec3 pos 		= position;
-	vec3 camNorm    = abs(cameraPos) / grassDims;
+	vec3 mGrassDims = grassDims * vec3(1, heightBasedBladeLen(), 1); 
+	mat4 scaledModel = scale(mGrassDims);
 
-	mat3 normalMatrix 	= transpose(inverse(mat3(modelMatrix)));
-	OUT.normal 			= normalize(normalMatrix * normalize(normal));
+	vec3 pos 		= position;
+	vec3 camNorm    = abs(cameraPos) / mGrassDims;
 
 	vec3 worldPosCache = vec3(positions[gl_InstanceID].x , 0, positions[gl_InstanceID].z);
 	float windStrength = texture2D(diffuseTex,(worldPosCache/spacePerBlade).xz).x;
 
 	if(pos.y > 0.1f && useTexture == 0){
 
-		vec3 windFwd = mat3(modelMatrix) * vec3(windDir.x, 0, -windDir.y);
+		vec3 windFwd = mat3(scaledModel) * vec3(windDir.x, 0, -windDir.y);
 		vec3 windRight = normalize(cross(windFwd, UP));
 
 		float x =  radians(windRightSway) * sin(time)* windStrength;
@@ -104,15 +112,14 @@ void main(void)	{
 	}
 	
 	//this is the final postion. Any changes to individual blades should be done above
-	vec3 worldPosition = vec3(positions[gl_InstanceID].x , (yPos[gl_InstanceID] /grassDimensions.y) +1.9f, positions[gl_InstanceID].z) + pos;
+	vec3 worldPosition = vec3(positions[gl_InstanceID].x , (yPos[gl_InstanceID] /mGrassDims.y) +1.9f, positions[gl_InstanceID].z) + pos;
 	worldPosition.x *= -1.0f;
 
-	gl_Position	  		= (projMatrix * viewMatrix * modelMatrix) * vec4(worldPosition.x, worldPosition.y, worldPosition.z, 1.0);
+	
+
+	gl_Position	  		= (projMatrix * viewMatrix * scaledModel) * vec4(worldPosition.x, worldPosition.y, worldPosition.z, 1.0);
 	OUT.texCoord  		= texCoord;
 	OUT.nWorldPos 		= worldPosition/ spacePerBlade;
 	OUT.cameraReg		= camNorm - abs(worldPosition);
 	OUT.dist     		= camRegion(camNorm, worldPosition);
-	OUT.viewVector	    = worldPosition - vec3(cameraPos.x, 0, cameraPos.z);
-
-
 }

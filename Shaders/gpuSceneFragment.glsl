@@ -82,7 +82,7 @@ mat4 brightnessMatrix( float _brightness )
 
 vec4 addWind( vec2 uv ){
 
-	uv = uv/5.0f;
+	uv = uv ;
 	float windTime = time * 0.02 * 10.0f;
 	uv  += windTime * vec2(-windDir.x, windDir.y);
 	return (texture2D(windTex, uv));
@@ -112,22 +112,16 @@ vec4 colorize(vec2 uv, vec3 objectPos , float inRegion, vec3 camDist){
 	finCol *= aoCol;
 
 
-	//finCol +=vec4(0.1137, 0.7176, 0.1922, 1.0) * heightBlend(objectPos.y , 10.0);
 
-	finCol +=vec4(0.4431, 0.6235, 0.2706, 1.0) * heightBlend(objectPos.y , 10.0);
+	vec4 wc = addWind(objectPos.xz);
+	wc = clamp (wc, 0.0, 1.0);
+	vec3 wct = mix(vec3(0.0), wc.xyz, heightBlend(objectPos.y , 20.0));
+	finCol.xyz = mix(finCol.xyz, wct, uv.y);
 
-
-	// vec4 wc = addWind(objectPos.xz);
-	// wc = clamp (wc, 0.0, 1.0);
-	// vec3 wct = mix(vec3(0.0), wc.xyz, heightBlend(objectPos.y , 8.0));
-	// finCol.xyz = mix(finCol.xyz, wct, uv.y);
+	finCol +=vec4(0.1137, 0.7176, 0.1922, 1.0) * heightBlend(objectPos.y , 10.0);
 
 	if(inRegion > 1){
-		// //ADD SLOW COLOR STUFF
-		// vec2 camuv = normalize(camDist.xz);
-		// // camuv *= 1.0 - camuv.yx;
-		// float vig = camuv.x * camuv.y * 10.0;
-		// finCol =vec4(camuv, 0.0, 1.0);
+		finCol *= satMatrix(1.2);
 	}
 
 	finCol.a = 1.0;
