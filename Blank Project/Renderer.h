@@ -99,5 +99,6 @@ protected:
 	float windRightSway;
 	Vector2 windDir;
 	Vector3 grassDimensions;
+	Vector3 cameraStartPos;
 };
 

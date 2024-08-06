@@ -3,6 +3,7 @@
 Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
 	SCALE = { 40, 40 };
 	TOTALDISPATCH = SCALE.x * SCALE.y * 10 * 10;
+	cameraStartPos = { 2402.71f, 340.03f, -3900.0f };
 
 	if (!initShaders())  return;
 	if (!initTextures()) return;
@@ -12,7 +13,7 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
 	heightmapSize = heightMap->GetHeightmapSize();
 	if (!initSceneNodes()) return;
 
-	camera = new Camera(-45.0f, 0.0f, {0,0,0});
+	camera = new Camera(-6.4f, 161.0f, cameraStartPos);
 	light = new Light(heightmapSize * Vector3(0.5f, 3.0, 0.5f), Vector4(1, 1, 1, 1), 10000);
 
 	localOrigin = heightmapSize * Vector3(0.5f, 5.0f, 0.5f);
@@ -186,6 +187,7 @@ void Renderer::UpdateScene(float dt) {
 	frameFrustum.FromMatrix(projMatrix * viewMatrix);
 
 	root->Update(dt);
+	
 }
 
 void Renderer::BuildNodeLists(SceneNode* from) {
@@ -261,7 +263,7 @@ void Renderer::RenderScene() {
 
 	DrawSkybox();
 	DrawHeightMap();
-	DrawSceneNodeItems();
+	//DrawSceneNodeItems();
 	DrawGrass();
 	
 }
