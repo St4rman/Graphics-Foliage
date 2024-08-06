@@ -25,12 +25,12 @@ uniform vec3 cameraPos;
 uniform vec3 grassDims;
 
 layout(binding = 2, std430) readonly buffer ssbo1 {
-	vec3 positions[160000];
+	vec3 positions[2560000];
 	vec4 grassDimensions;
 };
 
 layout(binding = 3, std430) buffer heightBuffer{
-    float yPos[160000];
+    float yPos[2560000];
 };
 
 in vec3 position;
@@ -112,4 +112,7 @@ void main(void)	{
 	OUT.nWorldPos 		= worldPosition/ spacePerBlade;
 	OUT.cameraReg		= camNorm - abs(worldPosition);
 	OUT.dist     		= camRegion(camNorm, worldPosition);
+	OUT.viewVector	    = worldPosition - vec3(cameraPos.x, 0, cameraPos.z);
+
+
 }

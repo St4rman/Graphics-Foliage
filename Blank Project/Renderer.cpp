@@ -1,9 +1,10 @@
 #include "Renderer.h"
 
 Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
-	SCALE = { 40, 40 };
-	TOTALDISPATCH = SCALE.x * SCALE.y * 10 * 10;
-	cameraStartPos = { 2402.71f, 340.03f, -3900.0f };
+	
+	SCALE = { 80, 80 };
+	TOTALDISPATCH = SCALE.x * SCALE.y * 20 * 20;
+  cameraStartPos = { 2402.71f, 340.03f, -3900.0f };
 
 	if (!initShaders())  return;
 	if (!initTextures()) return;
@@ -11,10 +12,13 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
 	if (!initComputeShaders()) return;
 	
 	heightmapSize = heightMap->GetHeightmapSize();
-	if (!initSceneNodes()) return;
+	
+
 
 	camera = new Camera(-6.4f, 161.0f, cameraStartPos);
-	light = new Light(heightmapSize * Vector3(0.5f, 3.0, 0.5f), Vector4(1, 1, 1, 1), 10000);
+	light = new Light(heightmapSize* Vector3(0.5f, heightmapSize.x * 0.5f / heightmapSize.y, -0.5f), Vector4(1, 1, 1, 1), heightmapSize.x);
+
+	if (!initSceneNodes()) return;
 
 	localOrigin = heightmapSize * Vector3(0.5f, 5.0f, 0.5f);
 
@@ -32,7 +36,11 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
 	windFwdSway = 90;
 	windRightSway = 70;
 
-	grassDimensions = { 4, 15, 4 };
+
+	//grassDimensions = { 4, 15, 4 };
+
+	grassDimensions = { 2, 15, 2 };
+
 	init = true;
 	
 }
@@ -127,6 +135,7 @@ bool Renderer::initComputeShaders() {
 	
 
 	std::vector<float> temp = heightMap->GetVerticalOffset();
+	std::cout << "vert length offset" << temp.size();
 	std::reverse(temp.begin(), temp.end());
 	glCreateBuffers(1, &heightBuffer);
 	glNamedBufferStorage(heightBuffer, temp.size() * sizeof(GLfloat),reinterpret_cast<GLfloat*>(temp.data()), GL_DYNAMIC_STORAGE_BIT);
@@ -154,7 +163,7 @@ bool Renderer::initMeshes(){
 	triangle	= Mesh::GenerateTriangle();
 	triangle->GenerateNormals();
 	triangle->GenerateTangents();
-	heightMap	= new HeightMap(TEXTUREDIR"noise2.jpg", { 10.0f, 5.0f, 10.0f });
+	heightMap	= new HeightMap(TEXTUREDIR"bigNoise.png", { 5.0f, 5.0f, 5.0f });
 	grassMesh	= Mesh::LoadFromMeshFile("GrassVert.msh");
 
 	return heightMap->loadSuccess();
@@ -163,9 +172,7 @@ bool Renderer::initMeshes(){
 
 bool Renderer::initSceneNodes() {
 	root = new SceneNode(Mesh::LoadFromMeshFile("OffsetCubeY.msh"));
-	root->SetTransform(Matrix4::Translation({ 0,
-		0,
-		0 }));
+	root->SetTransform(Matrix4::Translation(light->GetPosition()));
 	root->SetModelScale(Vector3(100, 100, 100));
 	
 	SceneNode* temp = new SceneNode(Mesh::LoadFromMeshFile("OffsetCubeY.msh"));
