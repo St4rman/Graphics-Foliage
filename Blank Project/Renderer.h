@@ -43,6 +43,7 @@ protected:
 	void DrawSkybox();
 	void DrawSceneNodeItems();
 	void DrawGrass();
+	void DrawWind();
 
 	void BuildNodeLists(SceneNode* from);
 	void SortNodeLists();
@@ -60,6 +61,7 @@ protected:
 	Shader* skyboxShader;
 	Shader* sceneShader;
 	Shader* gpuShader;
+	Shader* windShader;
 
 	ComputeShader* compShader;
 

@@ -12,7 +12,8 @@ Renderer::Renderer(Window& parent) : OGLRenderer(parent) {
 	heightmapSize = heightMap->GetHeightmapSize();
 	if (!initSceneNodes()) return;
 
-	camera = new Camera(-45.0f, 0.0f, {0,0,0});
+	//camera = new Camera(-45.0f, 0.0f, {2340,396,-3812});
+	camera = new Camera(-45.0f, 0.0f, { 135.684,-6.56977,-1798.51 });
 	light = new Light(heightmapSize * Vector3(0.5f, 3.0, 0.5f), Vector4(1, 1, 1, 1), 10000);
 
 	localOrigin = heightmapSize * Vector3(0.5f, 5.0f, 0.5f);
@@ -49,7 +50,7 @@ Renderer::~Renderer(void) {
 
 	//ALL SHADERS!!!
 	delete lightShader;
-	delete reflectShader;
+	delete windShader;
 	delete skyboxShader;
 	delete sceneShader;
 	delete gpuShader;
@@ -98,13 +99,13 @@ bool Renderer::initTextures() {
 
 bool Renderer::initShaders() {
 
-	reflectShader = new Shader("reflectVertex.glsl", "reflectFragment.glsl");
+	windShader	  = new Shader("windVertex.glsl", "windFragment.glsl");
 	skyboxShader  = new Shader("skyboxVertex.glsl", "skyboxFragment.glsl");
 	lightShader   = new Shader("PerPixelVertex.glsl", "PerPixelFragment.glsl");
 	sceneShader   = new Shader("sceneVertex.glsl", "sceneFragment.glsl");
 	gpuShader     = new Shader("gpuSceneVertex.glsl", "gpuSceneFragment.glsl");
 	
-	if (!reflectShader->LoadSuccess() || !skyboxShader->LoadSuccess() ||
+	if (!windShader->LoadSuccess() || !skyboxShader->LoadSuccess() ||
 		!lightShader->LoadSuccess()   || !sceneShader->LoadSuccess()  ||
 		!gpuShader->LoadSuccess() ) {
 		return false;
@@ -129,7 +130,6 @@ bool Renderer::initComputeShaders() {
 	std::reverse(temp.begin(), temp.end());
 	glCreateBuffers(1, &heightBuffer);
 	glNamedBufferStorage(heightBuffer, temp.size() * sizeof(GLfloat),reinterpret_cast<GLfloat*>(temp.data()), GL_DYNAMIC_STORAGE_BIT);
-
 
 
 	glGenTextures(1, &compVnoise);
@@ -184,7 +184,10 @@ void Renderer::UpdateScene(float dt) {
 	camera->UpdateCamera(dt);
 	viewMatrix = camera->BuildViewMatrix();
 	frameFrustum.FromMatrix(projMatrix * viewMatrix);
-
+	
+	if (Window::GetKeyboard()->KeyTriggered(KEYBOARD_0)) {
+		std::cout << camera->GetPosition();
+	}
 	root->Update(dt);
 }
 
@@ -260,9 +263,10 @@ void Renderer::RenderScene() {
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
 	DrawSkybox();
-	DrawHeightMap();
-	DrawSceneNodeItems();
-	DrawGrass();
+	//DrawHeightMap();
+	//DrawSceneNodeItems();
+	DrawWind();
+	//DrawGrass();
 	
 }
 
@@ -304,7 +308,6 @@ void Renderer::DrawHeightMap() {
 }
 
 void Renderer::DrawGrass() {
-
 
 	Vector3 hSize = heightMap->GetHeightmapSize();
 
@@ -374,4 +377,23 @@ void Renderer::DrawGrass() {
 	UpdateShaderMatrices();
 	quad->Draw();
 	
+}
+
+void Renderer::DrawWind() {
+
+	modelMatrix.ToIdentity();
+	textureMatrix.ToIdentity();
+
+	vector<Vector3> translation;
+	translation.emplace_back(Vector3(1, 0, 0));
+	translation.emplace_back(Vector3(2, 0, 0));
+
+
+	BindShader(windShader);
+	glUniform3fv(glGetUniformLocation(windShader->GetProgram(), "offSets"), translation.size(), (float*)&translation[0]);
+
+	modelMatrix = Matrix4::Translation({ 0, 0, 0 }) * Matrix4::Scale({ 1, 1, 1});
+	UpdateShaderMatrices();
+	quad->DrawInstanced(2);
+
 }
