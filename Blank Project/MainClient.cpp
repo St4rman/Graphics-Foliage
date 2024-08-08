@@ -4,7 +4,7 @@
 #include "gui.h"
 
 int main()	{
-	Window w("Grass time!", 1280, 720, false);
+	Window w("Grass time!", 1920, 1080, true);
 	bool showMouse = false;
 	w.LockMouseToWindow(true);
 	w.ShowOSPointer(showMouse);
@@ -23,7 +23,7 @@ int main()	{
 	
 
 
-	gui* GUI = new gui(1280, 720);
+	gui* GUI = new gui(1920, 1080);
 	if (!GUI->hasGuiInit()) {
 		return -1;
 	}
@@ -48,7 +48,7 @@ int main()	{
 			Renderer.updateWindDir(GUI->returnWDir());
 		}
 		if (Window::GetKeyboard()->KeyDown(KEYBOARD_F3)) {
-			//showMouse != showMouse;
+			showMouse != showMouse;
 			w.ShowOSPointer(true);
 		}
 	}

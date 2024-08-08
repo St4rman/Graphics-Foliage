@@ -33,13 +33,16 @@ void gui::BufferGuiData() {
 
 	ImGui_ImplOpenGL3_NewFrame();
 
-	ImGuiIO& io = ImGui::GetIO();
+	/*ImGuiIO& io = ImGui::GetIO();
 	POINT p{};
 	GetCursorPos(&p);
-	io.MousePos = ImVec2(p.x, p.y);
+	io.MousePos = ImVec2(p.x, p.y);*/
 
 	ImGui::NewFrame();
+	/*ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+	ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(1.0f, 1.0f));*/
 
+	ImGui::SetNextWindowPos(ImVec2(0, 0));
 	ImGui::Begin("Grass Rendering Tool.", 0, ImGuiWindowFlags_AlwaysAutoResize);
 	{
 		int show = 1;
@@ -48,9 +51,10 @@ void gui::BufferGuiData() {
 		ImGui::Text("Press Tab to cycle Wind Direction");
 		ImGui::SameLine();
 		ImGui::ArrowButton("##Right", ImGuiDir(index));
-		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-		ImGui::Text("Camera Pos: %f x, %f y, %f z",cameraPos.x, cameraPos.y, cameraPos.z);
-;	}
+		/*ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+		ImGui::Text("Camera Pos: %f x, %f y, %f z",cameraPos.x, cameraPos.y, cameraPos.z);*/
+	}
+	
 	ImGui::End();
 
 }
