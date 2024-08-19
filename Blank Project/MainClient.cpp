@@ -4,7 +4,7 @@
 #include "gui.h"
 
 int main()	{
-	Window w("Grass time!", 1920, 1080, true);
+	Window w("Grass time!", 1280, 720, false);
 	bool showMouse = false;
 	w.LockMouseToWindow(true);
 	w.ShowOSPointer(showMouse);
@@ -22,8 +22,7 @@ int main()	{
 	}
 	
 
-
-	gui* GUI = new gui(1920, 1080);
+	gui* GUI = new gui(1280, 720);
 	if (!GUI->hasGuiInit()) {
 		return -1;
 	}
